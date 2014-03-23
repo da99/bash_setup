@@ -51,7 +51,14 @@ case "$action" in
     fi
 
     tmpl="$(cat "$1")"
-    eval "echo \"$tmpl\"" >> "$output"
+
+    # Note: eval and write the content separately.
+    # If you combine those two steps, and an error
+    # occurs during eval, an empty file will be created:
+    #   eval "..." >> $output
+    content="$(eval "echo \"$tmpl\"")"
+    echo "$content" >> $output
+
     colorize green "=== Wrote: $output"
     ;;
 
