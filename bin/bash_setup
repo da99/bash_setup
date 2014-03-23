@@ -19,6 +19,10 @@ function git_is_clean {
 
 case "$action" in
 
+  "")
+    cd $BIN && cd .. && git status
+    ;;
+
   "bump")
     git_is_clean
 
@@ -35,8 +39,20 @@ case "$action" in
     git tag         "v$VER"
     ;;
 
-  "")
-    cd $BIN && cd .. && git status
+  "template")
+    # inspired by:
+    # http://stackoverflow.com/a/12422379
+    file="$1"
+    output="$2"
+
+    if [[ -f $output ]]; then
+      colorize yellow "=== Skipping existing file: $output"
+      exit 0
+    fi
+
+    tmpl="$(cat "$1")"
+    eval "echo \"$tmpl\"" >> "$output"
+    colorize green "=== Wrote: $output"
     ;;
 
   *)
