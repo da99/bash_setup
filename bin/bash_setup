@@ -19,10 +19,6 @@ function git_is_clean {
 
 case "$action" in
 
-  "")
-    cd $BIN && cd .. && git status
-    ;;
-
   "bump")
     git_is_clean
 
@@ -39,28 +35,6 @@ case "$action" in
     git tag         "v$VER"
     ;;
 
-  "template")
-    # inspired by:
-    # http://stackoverflow.com/a/12422379
-    file="$1"
-    output="$2"
-
-    if [[ -f $output ]]; then
-      colorize yellow "=== Skipping existing file: $output"
-      exit 0
-    fi
-
-    tmpl="$(cat "$1")"
-
-    # Note: eval and write the content separately.
-    # If you combine those two steps, and an error
-    # occurs during eval, an empty file will be created:
-    #   eval "..." >> $output
-    content="$(eval "echo \"$tmpl\"")"
-    echo "$content" >> $output
-
-    colorize green "=== Wrote: $output"
-    ;;
 
   *)
     echo "Unknown option: $action" 1>&2
