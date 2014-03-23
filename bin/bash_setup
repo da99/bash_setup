@@ -2,8 +2,12 @@
 # -*- bash -*-
 #
 #
+action="$1"
+shift
+
 set -u -e -o pipefail
 
+BIN=/apps/bash_setup/bin
 function git_is_clean {
     if ! git_repo_is_clean
     then
@@ -13,7 +17,7 @@ function git_is_clean {
 }
 
 
-case "$1" in
+case "$action" in
 
   "bump")
     git_is_clean
@@ -29,6 +33,10 @@ case "$1" in
     git_update
     git commit -m   "Bump: $VER"
     git tag         "v$VER"
+    ;;
+
+  "")
+    cd $BIN && cd .. && git status
     ;;
 
   *)
