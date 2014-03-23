@@ -32,10 +32,10 @@ esac
 # From: stackoverflow.com/questions/635361/ksh-how-to-probe-stdin
 if [ -t 0 ] 
 then
-  echo "$(tput bold)$(tput setaf $color)$@$(tput sgr0)";
+  echo -e "$(tput bold)$(tput setaf $color)$@$(tput sgr0)";
 else
   while read line; do 
-    echo "$(tput bold)$(tput setaf $color)${line}$(tput sgr0)";
+    echo -e "$(tput bold)$(tput setaf $color)${line}$(tput sgr0)";
   done 
 fi
 
