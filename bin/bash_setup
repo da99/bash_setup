@@ -58,7 +58,6 @@ case "$action" in
   "bump_commit_push")
     bash_setup bump_and_commit "$@"
     git push origin "v$(cat VERSION)"
-    git push
     ;;
 
   *)
