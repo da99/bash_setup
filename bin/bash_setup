@@ -53,6 +53,10 @@ case "$action" in
     git_update
     git commit -m   "Bump: $VER"
     git tag         "v$VER"
+    ;;
+
+  "bump_commit_push")
+    bash_setup bump_and_commit "$@"
     git push origin "v$(cat VERSION)"
     git push
     ;;
