@@ -34,7 +34,6 @@ case "$action" in
     ;;
 
   "bump")
-    PATH="/progs/ruby/current/bin:$PATH"
     if [[ -z "$(which bump)" ]]; then
       echo "!!! install rubygem: gem install bump"
       exit 1
