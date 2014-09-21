@@ -33,6 +33,8 @@ case "$action" in
     echo " $ bash_setup ssh_key          name   [name.com]"
     echo " $ bash_setup ssh_key          name   domain.something"
     echo ""
+    echo " $ bash_setup o-x              dir  # === make bin files non-executable for others"
+    echo ""
     echo " ====================================================="
     echo ""
     exit 0
@@ -99,6 +101,17 @@ case "$action" in
 
     echo ""
     echo "=== test it w/: ssh -T git@$domain"
+    ;;
+
+  "o-x")
+    dir="$1"
+
+    chmod o-x $dir/*/bin/*
+    for x in $dir/*/bin; do
+      echo "=== $x"
+      ls -l $x
+      echo ""
+    done
     ;;
 
   *)
