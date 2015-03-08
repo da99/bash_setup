@@ -30,6 +30,7 @@ case "$action" in
     echo ""
     echo " $ bash_setup o-x              dir  # === make bin files non-executable for others"
     echo ""
+    echo " $ bash_setup run_when_changed file cmd"
     echo " ====================================================="
     echo ""
     exit 0
@@ -59,6 +60,23 @@ case "$action" in
   "bump_commit_push")
     bash_setup bump_and_commit "$@"
     git push origin "v$(cat VERSION)"
+    ;;
+
+  "run_when_changed")
+    file="$1"
+    shift
+    args="$@"
+    old=""
+
+    while [ -f "$file" ];
+    do
+      new="$(date +%s -r $file)"
+      if [[ "$old" != "$new" ]]; then
+        $args || true
+        old="$new"
+      fi
+      sleep 0.5
+    done
     ;;
 
   "o-x")
