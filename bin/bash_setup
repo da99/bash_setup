@@ -72,6 +72,8 @@ case "$action" in
     do
       new="$(date +%s -r $file)"
       if [[ "$old" != "$new" ]]; then
+        echo ""
+        echo "========================================="
         $args || true
         old="$new"
       fi
