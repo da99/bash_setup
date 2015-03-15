@@ -2,6 +2,7 @@
 # -*- bash -*-
 #
 #
+ignore="$IGNORE"
 action="$1"
 shift
 
@@ -30,7 +31,8 @@ case "$action" in
     echo ""
     echo " $ bash_setup o-x              dir  # === make bin files non-executable for others"
     echo ""
-    echo " $ bash_setup run_when_changed file cmd"
+    echo " $ bash_setup watch  my_script -myargs -myargs"
+    echo ""
     echo " ====================================================="
     echo ""
     exit 0
@@ -62,24 +64,64 @@ case "$action" in
     git push origin "v$(cat VERSION)"
     ;;
 
-  "run_when_changed")
-    file="$1"
-    shift
-    args="$@"
-    old=""
+  "watch")
+    #
+    #  For more info on inotifywait:
+    #    http://manpages.ubuntu.com/manpages/hardy/man1/inotifywait.1.html
+    #
+    #  The script will send the output
+    #  of inotifywaut to `my_script`.
+    #
+    #  Files/dirs with .git in the name are ignored.
+    #  Example:
+    #     .git
+    #     ./.git
+    #     ./dir/file.git/
+    if [[ ! -z "$ignore" ]]
+    then
+      ignore="--exclude $ignore"
+    fi
 
-    while [ -f "$file" ];
+    cmd="$@"
+
+    if [[ -z "$@" ]]
+    then
+      echo "No command given. Exiting..." 1>&2
+      exit 1
+    fi
+
+    # temp="$(mktemp)"
+    # bash_setup watch_run $temp "$cmd" &
+    # run_id=$!
+
+    # cleanup () {
+      # kill $run_id || true
+      # rm $temp
+    # }
+
+    # trap cleanup SIGINT SIGTERM
+
+    # echo "---- Process: $run_id ----"
+
+    # === From an answer by "technosaurus":
+    #     http://stackoverflow.com/a/18295696/841803
+    inotifywait -q -m --exclude .git/ $ignore -r . | while read CHANGE
     do
-      new="$(date +%s -r $file)"
-      if [[ "$old" != "$new" ]]; then
+
+      op=$(echo "$CHANGE" | cut -d' ' -f 2)
+      file=$(echo "$CHANGE" | cut -d' ' -f 3)
+
+      if [[ ( ! "$op" =~ "NOWRITE" ) && ( "$op" =~ "CLOSE" || "$op" =~ "WRITE" )  && ! -z "$file" ]]
+      then
         echo ""
-        echo "========================================="
-        $args || true
-        old="$new"
+        echo $CHANGE
+        $cmd &
       fi
-      sleep 0.5
+
     done
     ;;
+
+
 
   "o-x")
     dir="$1"
