@@ -30,6 +30,10 @@ case "$action" in
     echo " $ bash_setup bump_and_commit    major|minor|patch"
     echo " $ bash_setup bump_commit_push   major|minor|patch"
     echo ""
+    echo " $ bash_setup js_zero  substring"
+    echo ""
+    echo " $ bash_setup release"
+    echo ""
     echo " $ bash_setup o-x              dir  # === make bin files non-executable for others"
     echo ""
     echo " $ bash_setup watch  my_script -myargs -myargs"
@@ -134,6 +138,40 @@ case "$action" in
       ls -l $x
       echo ""
     done
+    ;;
+
+  "js_zero")
+    SUBSTR="$1"
+    FOUND="no"
+
+    FILES="$(find . -type f -name "*.js" -not -wholename "*/vendor/*")"
+
+    for FILE in $FILES ; do
+      # Check if the file contains 'debugger'
+      GREPS="$(grep -n "$SUBSTR" $FILE)"
+
+      if [ -n "$GREPS" ]
+      then
+        echo -e -n "\e[01;31m$FILE\e[0m " 1>&2
+        echo "contains $SUBSTR" 1>&2
+        echo "$GREPS" 1>&2
+        FOUND="yes"
+      fi
+    done
+
+    if [ "$FOUND" = "yes" ]
+    then
+      exit 1
+    fi
+    ;;
+
+  "release")
+    bash_setup js_zero console.log
+    bash_setup js_zero debugger
+    if [[ -f VERSION ]]; then
+      git push origin "v$(cat VERSION)"
+      git push
+    fi
     ;;
 
   *)
