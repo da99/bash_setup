@@ -23,14 +23,14 @@ case "$action" in
   "help")
     echo " ====================================================="
     echo ""
-    echo " $ bash_setup bump current"
-    echo " $ bash_setup bump major"
-    echo " $ bash_setup bump minor"
-    echo " $ bash_setup bump patch"
-    echo " $ bash_setup bump_and_commit    major|minor|patch"
+    echo " $ bash_setup bump               current"
+    echo " $ bash_setup bump               major"
+    echo " $ bash_setup bump               minor"
+    echo " $ bash_setup bump               patch"
     echo " $ bash_setup bump_commit_push   major|minor|patch"
     echo ""
     echo " $ bash_setup js_zero  substring"
+    echo " $ bash_setup js_clean"
     echo ""
     echo " $ bash_setup release"
     echo ""
@@ -52,20 +52,17 @@ case "$action" in
       git_is_clean
       echo -e "=== Bumping from: $(bump current)\n"
     fi
+    bash_setup js_clean
     bump $1 --no-commit --no-bundle
     ;;
 
-  "bump_and_commit")
+  "bump_commit_push")
     bash_setup bump "$1"
     VER=$(cat VERSION)
 
     git_update
     git commit -m   "Bump: $VER"
     git tag         "v$VER"
-    ;;
-
-  "bump_commit_push")
-    bash_setup bump_and_commit "$@"
     git push origin "v$(cat VERSION)"
     git push
     ;;
@@ -165,9 +162,12 @@ case "$action" in
     fi
     ;;
 
-  "release")
+  "js_clean")
     bash_setup js_zero console.log
     bash_setup js_zero debugger
+    ;;
+
+  "release")
     if [[ -f VERSION ]]; then
       git push origin "v$(cat VERSION)"
       git push
