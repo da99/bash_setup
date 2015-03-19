@@ -144,10 +144,8 @@ case "$action" in
     FILES="$(find . -type f -name "*.js" -not -wholename "*/vendor/*")"
 
     for FILE in $FILES ; do
-      # Check if the file contains 'debugger'
-      GREPS="$(grep -n "$SUBSTR" $FILE)"
-
-      if [ -n "$GREPS" ]
+      GREPS="$(grep -n "$SUBSTR" $FILE || echo '')"
+      if [ ! -z "$GREPS" ]
       then
         echo -e -n "\e[01;31m$FILE\e[0m " 1>&2
         echo "contains $SUBSTR" 1>&2
