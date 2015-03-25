@@ -28,6 +28,7 @@ case "$action" in
     echo " $ bash_setup bump               minor"
     echo " $ bash_setup bump               patch"
     echo " $ bash_setup bump_commit_push   major|minor|patch"
+    echo " $ bash_setup push_tag"
     echo ""
     echo " $ bash_setup js_zero  substring"
     echo " $ bash_setup js_clean"
@@ -63,8 +64,11 @@ case "$action" in
     git_update
     git commit -m   "Bump: $VER"
     git tag         "v$VER"
-    git push origin "v$(cat VERSION)"
     git push
+    ;;
+
+  "push_tag")
+    git push origin "v$(cat VERSION)"
     ;;
 
   "watch")
