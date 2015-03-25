@@ -170,10 +170,12 @@ case "$action" in
     ;;
 
   "release")
-    if [[ -f VERSION ]]; then
-      git push origin "v$(cat VERSION)"
-      git push
+    if [[ ! -f VERSION ]]; then
+      echo "=== VERSION file not found." 1>&2
+      exit 1
     fi
+    bash_setup push_tag
+    git push
     ;;
 
   *)
