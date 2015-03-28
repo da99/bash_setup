@@ -145,7 +145,7 @@ case "$action" in
     SUBSTR="$1"
     FOUND="no"
 
-    FILES="$(find . -type f -name "*.js" -not -wholename "*/vendor/*")"
+    FILES="$(find . -type f -name "*.js" -not -wholename "*/.git*" -and -not -wholename "*/bower_components/*" -and -not -wholename "*/vendor/*" -and -not -wholename "*/node_modules/*"  )"
 
     for FILE in $FILES ; do
       GREPS="$(grep -n "$SUBSTR" $FILE || echo '')"
