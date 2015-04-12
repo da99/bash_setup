@@ -33,6 +33,8 @@ case "$action" in
     echo " $ bash_setup js_zero  substring"
     echo " $ bash_setup js_clean"
     echo ""
+    echo " $ bash_setup files_zero  substring '*.ext'"
+    echo ""
     echo " $ bash_setup release"
     echo ""
     echo " $ bash_setup o-x              dir  # === make bin files non-executable for others"
@@ -139,6 +141,30 @@ case "$action" in
       ls -l $x
       echo ""
     done
+    ;;
+
+  "files_zero")
+    SUBSTR="$1"
+    ext="$2"
+    FOUND="no"
+
+    FILES="$(find . -type f -name "$ext" -not -wholename "*/.git*"  -and -not -wholename "*/specs/*" -and -not -wholename "*/bower_components/*" -and -not -wholename "*/vendor/*" -and -not -wholename "*/node_modules/*"  )"
+
+    for FILE in $FILES ; do
+      GREPS="$(grep -n "$SUBSTR" $FILE || echo '')"
+      if [ ! -z "$GREPS" ]
+      then
+        echo -e -n "\e[01;31m$FILE\e[0m " 1>&2
+        echo "contains $SUBSTR" 1>&2
+        echo "$GREPS" 1>&2
+        FOUND="yes"
+      fi
+    done
+
+    if [ "$FOUND" = "yes" ]
+    then
+      exit 1
+    fi
     ;;
 
   "js_zero")
