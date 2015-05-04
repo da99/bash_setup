@@ -41,6 +41,8 @@ case "$action" in
     echo ""
     echo " $ bash_setup watch  my_script -myargs -myargs"
     echo ""
+    echo " $ bash_setup   ppa     ppa:abc.xyz/..."
+    echo ""
     echo " ====================================================="
     echo ""
     exit 0
@@ -202,6 +204,11 @@ case "$action" in
     fi
     bash_setup push_tag
     git push
+    ;;
+
+  "ppa")
+    sudo add-apt-repository $1
+    sudo apt-get update
     ;;
 
   *)
