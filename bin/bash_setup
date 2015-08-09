@@ -84,6 +84,83 @@ case "$action" in
     fi
     ;;
 
+  "is_process_group??")
+    if $0 is_process_group? $@ ; then
+      echo "yes"
+    else
+      echo "no"
+    fi
+    ;;
+
+  "SIGINT_descendent_procs")
+    pid=$1
+    for id in $($0 descendent_procs $pid)
+    do
+      kill -SIGINT $id || echo "=== Could not SIGINT $id" 1>&2
+    done
+    ;;
+
+  "descendent_procs")
+    pid="$1"
+    pgid="$(ps -o pgid= $pid)"
+    this_pid=$$
+    this_pgid=$(ps -o pgid= $this_pid)
+    this_parent=$(ps -o ppid= $this_pid)
+
+    if [[ $pgid == $this_pgid ]] ; then
+      echo "=== Run this using setsid" 1>&2
+      exit 1
+    fi
+
+    # === Inspired from: http://superuser.com/a/784102
+    declare -A CHILDS
+    declare -A COMMS
+    while read P PP PGID CMD;do
+      if [[ "$PGID" -eq "$pgid" ]]; then
+        CHILDS[$PP]+=" $P"
+        COMMS[$P]="$CMD"
+      fi
+    done < <(ps -e -o pid= -o ppid= -o pgid= -o args=)
+
+    walk() {
+      if [[ $1 != $this_parent || $1 == $pid ]]; then
+        [[ $1 != $pid ]] && echo $1
+
+        if [[ ${CHILDS[$1]+is_set} ]]; then
+          for i in ${CHILDS[$1]}; do
+            walk $i
+          done
+        fi
+      else
+        echo "!!! IGNORING: $1" 1>&2
+      fi
+    }
+
+    walk $pid
+    ;;
+
+  "proc_tree")
+    pstree -a -A  -p -g $@
+    ;;
+
+  "proc_group")
+    ps -o pgrp --no-headers --pid $1
+    ;;
+
+  "is_process_group?")
+    [[ $1 == $($0 proc_group $1) ]]
+    ;;
+
+  "add_minus_sign_if_pgrp")
+    target="$1"
+    shift
+    if $0 is_process_group? $target ; then
+      echo "-$target"
+    else
+      echo $target
+    fi
+    ;;
+
   "watch")
     #
     #  For more info on inotifywait:
