@@ -307,6 +307,57 @@ case "$action" in
     make install
     ;;
 
+  "setup_traps")
+    if [[ -z "$@" ]]; then
+      nums=($($0 setup_traps with_nums))
+      start_at="$(expr ${nums[0]} + 1)"
+      count="$(expr ${nums[1]} - ${nums[0]} - 1)"
+      tail -n +"${start_at}" $0 | head -n $count
+      exit 0
+    fi
+
+    echo $LINENO # ==============
+
+    GREEN=$(tput setaf 2)
+    RED='\e[0;31m'
+    RESET_COLOR=$(tput sgr0)
+    setup_traps () {
+
+      verbose_wait () {
+        echo ""
+        echo -e "=== ${GREEN}Waiting${RESET_COLOR} in proc ${$}..."
+        wait || :
+        echo -e "=== ${GREEN}Done${RESET_COLOR} ($(basename $0) $$)"
+      }
+
+      on_err () {
+        exit_code="$1"
+        line="$2"
+
+        echo -e -n "!!! ERROR: "                            1>&2
+        echo -e -n "line: ${RED}${line}${RESET_COLOR} "      1>&2
+        echo -e    "exit: ${RED}${exit_code}${RESET_COLOR}" 1>&2
+
+        trap "exit ${exit_code}" INT
+
+        if bash_setup is_process_group? $$
+        then
+          echo -e  "!!! Running: ${RED}setsid KILL -SIGINT -${$}${RESET_COLOR}" 1>&2
+          setsid kill -SIGINT -$$
+        else
+          echo -e  "!!! Running: ${RED}setsid SIGINT_descendent_procs${RESET_COLOR} of ${$}" 1>&2
+          setsid bash_setup SIGINT_descendent_procs $$
+        fi
+      }
+
+      trap 'on_err $? $LINENO' ERR
+      trap 'wait || :'         EXIT
+
+    } # === setup_traps
+
+    echo $LINENO
+    ;;
+
   *)
     echo "Unknown option: $action" 1>&2
     exit 1
