@@ -94,6 +94,7 @@ case "$action" in
 
   "SIGINT_descendent_procs")
     pid=$1
+
     for id in $($0 descendent_procs $pid)
     do
       kill -SIGINT $id || echo "=== Could not SIGINT $id" 1>&2
@@ -114,25 +115,19 @@ case "$action" in
 
     # === Inspired from: http://superuser.com/a/784102
     declare -A CHILDS
-    declare -A COMMS
     while read P PP PGID CMD;do
       if [[ "$PGID" -eq "$pgid" ]]; then
         CHILDS[$PP]+=" $P"
-        COMMS[$P]="$CMD"
       fi
     done < <(ps -e -o pid= -o ppid= -o pgid= -o args=)
 
     walk() {
-      if [[ $1 != $this_parent || $1 == $pid ]]; then
-        [[ $1 != $pid ]] && echo $1
+      [[ $1 != $pid ]] && echo $1 || :
 
-        if [[ ${CHILDS[$1]+is_set} ]]; then
-          for i in ${CHILDS[$1]}; do
-            walk $i
-          done
-        fi
-      else
-        echo "!!! IGNORING: $1" 1>&2
+      if [[ ${CHILDS[$1]+is_set} ]]; then
+        for i in ${CHILDS[$1]}; do
+          walk $i
+        done
       fi
     }
 
