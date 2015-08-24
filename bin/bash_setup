@@ -23,15 +23,12 @@ case "$action" in
   "help")
     echo " ====================================================="
     echo ""
-    echo " $ bash_setup bump               current"
-    echo " $ bash_setup bump               major"
-    echo " $ bash_setup bump               minor"
-    echo " $ bash_setup bump               patch"
-    echo " $ bash_setup bump_commit_push   major|minor|patch"
+    echo " $ bash_setup version               current"
+    echo " $ bash_setup version               major"
+    echo " $ bash_setup version               minor"
+    echo " $ bash_setup version               patch"
+    echo " $ bash_setup version_commit_push   major|minor|patch"
     echo " $ bash_setup push_tag"
-    echo ""
-    echo " $ bash_setup js_zero  substring"
-    echo " $ bash_setup js_clean"
     echo ""
     echo " $ bash_setup files_zero  substring '*.ext'"
     echo ""
@@ -48,21 +45,17 @@ case "$action" in
     exit 0
     ;;
 
-  "bump")
-    if [[ -z "$(which bump)" ]]; then
-      echo "!!! install rubygem: gem install bump"
-      exit 1
+  "version")
+    if [[ -f "$(echo *.gemspec)" ]]; then
+      ruby_setup version $@
+    else
+      js_setup version $@
     fi
-    if [[ "$1" != "current" ]]; then
-      git_is_clean
-      echo -e "=== Bumping from: $(bump current)\n"
-    fi
-    bash_setup js_clean
-    bump $1 --no-commit --no-bundle
+
     ;;
 
-  "bump_commit_push")
-    bash_setup bump "$1"
+  "version_commit_push")
+    bash_setup version "$1"
     VER=$(cat VERSION)
 
     git_update
@@ -250,33 +243,6 @@ case "$action" in
     fi
     ;;
 
-  "js_zero")
-    SUBSTR="$1"
-    FOUND="no"
-
-    FILES="$(find . -type f -name "*.js" -not -wholename "*/.git*" -and -not -wholename "*/bower_components/*" -and -not -wholename "*/vendor/*" -and -not -wholename "*/node_modules/*"  )"
-
-    for FILE in $FILES ; do
-      GREPS="$(grep -n "$SUBSTR" $FILE || echo '')"
-      if [ ! -z "$GREPS" ]
-      then
-        echo -e -n "\e[01;31m$FILE\e[0m " 1>&2
-        echo "contains $SUBSTR" 1>&2
-        echo "$GREPS" 1>&2
-        FOUND="yes"
-      fi
-    done
-
-    if [ "$FOUND" = "yes" ]
-    then
-      exit 1
-    fi
-    ;;
-
-  "js_clean")
-    bash_setup js_zero console.log
-    bash_setup js_zero debugger
-    ;;
 
   "release")
     bash_setup push_tag
