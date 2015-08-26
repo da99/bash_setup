@@ -23,16 +23,9 @@ case "$action" in
   "help")
     echo " ====================================================="
     echo ""
-    echo " $ bash_setup version               current"
-    echo " $ bash_setup version               major"
-    echo " $ bash_setup version               minor"
-    echo " $ bash_setup version               patch"
-    echo " $ bash_setup version_commit_push   major|minor|patch"
-    echo " $ bash_setup push_tag"
     echo ""
     echo " $ bash_setup files_zero  substring '*.ext'"
     echo ""
-    echo " $ bash_setup release"
     echo ""
     echo " $ bash_setup o-x              dir  # === make bin files non-executable for others"
     echo ""
@@ -43,38 +36,6 @@ case "$action" in
     echo " ====================================================="
     echo ""
     exit 0
-    ;;
-
-  "version")
-    if [[ -f "$(echo *.gemspec)" ]]; then
-      ruby_setup version $@
-    else
-      js_setup version $@
-    fi
-
-    ;;
-
-  "version_commit_push")
-    bash_setup version "$1"
-    VER=$(cat VERSION)
-
-    git_update
-    git commit -m   "Bump: $VER"
-    git tag         "v$VER"
-    git push
-    ;;
-
-  "push_tag")
-    if [[ -f VERSION ]]; then
-      git push origin "v$(cat VERSION)"
-    else
-      if [[ -f "bower.json" ]]; then
-        git push origin "v$(cat bower.json  | json version)"
-      else
-        echo "=== No version file found." 1>&2
-        exit 1
-      fi
-    fi
     ;;
 
   "is_process_group??")
@@ -243,11 +204,6 @@ case "$action" in
     fi
     ;;
 
-
-  "release")
-    bash_setup push_tag
-    git push
-    ;;
 
   "ppa")
     sudo add-apt-repository $1
