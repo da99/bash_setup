@@ -20,22 +20,44 @@ function git_is_clean {
 
 case "$action" in
 
+  "print_help")
+    # === === Extract switch options from file
+    # ===      that are followed by: # ===
+    # === $ bash_setup print_help path/to/file
+
+    file="$1"
+    shift
+    cmd_print=""
+    cmd=""
+    nl_printed=""
+    IFS=$'\n'
+    for line in $(cat $file)
+    do
+      if [[ $line =~ ^[\ +0-9A-Za-z\_\-\'\"]+\)$ ]]; then
+        cmd=$(echo $line | tr -d '"'')')
+        cmd_print=""
+      else
+        if [[ -n "$cmd" && $line =~ "# ===" ]]; then
+          if [[ -z $cmd_print ]]; then
+            echo $cmd
+            cmd_print="true"
+          fi
+          echo ${line/'# ==='/''}
+          nl_printed=""
+        else
+          cmd=""
+          if [[ -z $nl_printed ]]; then
+            echo ""
+            nl_printed="true"
+          fi
+        fi
+      fi
+
+    done
+    ;;
+
   "help")
-    echo " ====================================================="
-    echo ""
-    echo ""
-    echo " $ bash_setup files_zero  substring '*.ext'"
-    echo ""
-    echo ""
-    echo " $ bash_setup o-x              dir  # === make bin files non-executable for others"
-    echo ""
-    echo " $ bash_setup watch  my_script -myargs -myargs"
-    echo ""
-    echo " $ bash_setup   ppa     ppa:abc.xyz/..."
-    echo ""
-    echo " ====================================================="
-    echo ""
-    exit 0
+    $0 print_help $0
     ;;
 
   "is_process_group??")
@@ -111,6 +133,8 @@ case "$action" in
     ;;
 
   "watch")
+    # === $ bash_setup watch  my_script -myargs -myargs"
+
     #
     #  For more info on inotifywait:
     #    http://manpages.ubuntu.com/manpages/hardy/man1/inotifywait.1.html
@@ -170,6 +194,9 @@ case "$action" in
 
 
   "o-x")
+    # === === make bin files non-executable for others
+    # === $ bash_setup o-x dir
+
     dir="$1"
 
     chmod o-x $dir/*/bin/*
@@ -181,6 +208,8 @@ case "$action" in
     ;;
 
   "files_zero")
+    # === $ bash_setup files_zero  substring '*.ext'"
+
     SUBSTR="$1"
     ext="$2"
     FOUND="no"
@@ -206,6 +235,8 @@ case "$action" in
 
 
   "ppa")
+    # === $ bash_setup   ppa     ppa:abc.xyz/..."
+
     sudo add-apt-repository $1
     sudo apt-get update
     ;;
