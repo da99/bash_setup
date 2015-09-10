@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
 #
-
-
 set -u -e -o pipefail
+
+action=$1
+shift
 
 case $action in
   help)
