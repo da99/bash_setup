@@ -60,6 +60,21 @@ case "$action" in
     $0 print_help $0
     ;;
 
+  "string_to_num")
+    str=$1
+    shift
+    sum=0
+    pos=0
+
+    # === $ bash_setup  string_to_num   word  -> num
+    while read -n1 char; do
+      code="$(printf '%d\n' "'$char")"
+      sum=$((sum + pos + code))
+      pos=$((pos + 1))
+    done < <(echo -n "$str")
+    echo $sum
+    ;;
+
   "new_bin")
     # === $ bash_setup  new_bin
     # === $ bash_setup  new_bin  name
