@@ -7,7 +7,7 @@ action=$1
 shift
 
 case $action in
-  help)
+  help|--help)
     bash_setup print_help $0
     ;;
 

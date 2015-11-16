@@ -9,6 +9,8 @@ shift
 
 set -u -e -o pipefail
 
+THIS_DIR="$(dirname $(dirname $0))"
+
 BIN=/apps/bash_setup/bin
 function git_is_clean {
     if ! git_repo_is_clean
@@ -106,6 +108,68 @@ case "$action" in
     fi
 
     chmod +x bin/${file_name}
+    ;;
+
+  mush?)
+    # === $ bash_setup mush? path/to/file.file
+    # === If file exists, exists w/ 0, prints nothing to STDOUT.
+    # === If file does NOT exists, prints to file,
+    # ===  prints/repeats path/to/file.file to STDOUT
+    file="$1"
+    shift
+    if [[ -f $file ]]; then
+      exit 0
+    else
+      bash_setup mush > $file
+      echo $file
+    fi
+    ;;
+
+  mush)
+    # === Wrapper for mush (Mustache for Bash)
+    # === https://github.com/jwerle/mush
+    # === Use it just like the mush executable
+    mush="${THIS_DIR}/bin/mush"
+    if [[ ! -f "$mush" ]]; then
+      wget -O $mush "https://raw.githubusercontent.com/jwerle/mush/master/mush.sh"
+      chmod +x $mush
+    fi
+    $mush "$@"
+    ;;
+
+  "Capitalize")
+    # === $ Capitalize wOrD => Word
+    # Based on: http://stackoverflow.com/a/12487465/841803
+    word="$1"
+    first="$(tr '[:lower:]' '[:upper:]' <<< ${word:0:1})"
+    rest="$(tr  '[:upper:]' '[:lower:]' <<< ${word:1})"
+    echo "$first$rest"
+    ;;
+
+  "Model_Name")
+    # === $ Model_Name app_name => App_Name
+    # Based on: http://stackoverflow.com/questions/779847/sed-change-case-of-substitution-group
+    echo "$@" | sed -e 's/_\([a-z]\)/_\U\1/g' -e 's/^\([a-z]\)/\U\1/g'
+    ;;
+
+  "UPPER")
+    # === $ lower wOrD => WORD
+    word="$1"
+    echo "$(tr  '[:lower:]' '[:upper:]' <<< ${word})"
+    ;;
+
+  "lower")
+    # === $ lower wOrD => word
+    word="$1"
+    echo "$(tr  '[:upper:]' '[:lower:]' <<< ${word})"
+    ;;
+
+  "app_name")
+    if [[ -z "$@" ]]; then
+      echo "$(basename $(pwd))"
+    else
+      echo "$1"
+    fi
     ;;
 
   "is_process_group??")
