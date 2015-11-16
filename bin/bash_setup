@@ -4,6 +4,7 @@
 #
 ignore="$IGNORE"
 action="$1"
+IS_DEV="$IS_DEV"
 shift
 
 set -u -e -o pipefail
@@ -73,6 +74,17 @@ case "$action" in
       pos=$((pos + 1))
     done < <(echo -n "$str")
     echo $sum
+    ;;
+
+  "dev!")
+    # === $ bash_setup dev!
+    # === Exits with code status 1 if "$IS_DEV" is null
+    # === Exits with code status 0 if "$IS_DEV" is not null.
+    if [[ -z "$IS_DEV" ]]; then
+      echo "!!! Not a dev machine." 1>&2
+      exit 1
+    fi
+    exit 0
     ;;
 
   "new_bin")
