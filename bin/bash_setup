@@ -63,6 +63,12 @@ case "$action" in
     $0 print_help $0
     ;;
 
+  "rel_path_to_file")
+    # === $ bash_setup rel_path_to_file  path  start
+    # === See: https://docs.python.org/2/library/os.path.html#os.path.relpath
+    python -c "import os.path; print os.path.relpath('$1', '$2')"
+    ;;
+
   "string_to_num")
     str=$1
     shift
