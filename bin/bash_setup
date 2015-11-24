@@ -36,7 +36,7 @@ case "$action" in
     IFS=$'\n'
     for line in $(cat $file)
     do
-      if [[ $line =~ ^[\ +0-9A-Za-z\_\-\'\"]+\)$ ]]; then
+      if [[ $line =~ ^[\*\ +0-9A-Za-z\_\-\'\"]+\)$ ]]; then
         cmd=$(echo $line | tr -d '"'')')
         cmd_print=""
       else
@@ -59,7 +59,7 @@ case "$action" in
     done
     ;;
 
-  "help")
+  "help"|"--help")
     $0 print_help $0
     ;;
 
