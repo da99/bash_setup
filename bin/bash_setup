@@ -373,9 +373,47 @@ case "$action" in
     make install
     ;;
 
+  "proc_tree")
+    # === $ bash_setup proc_tree PID
+    ps wwf -s $@
+    ;;
+
+  "show_err_line_trap")
+    if [[ -z "$@" ]]; then
+      nums=($($0 $action with_nums))
+      start_at="$(expr ${nums[0]} + 1)"
+      count="$(expr ${nums[1]} - ${nums[0]} - 1)"
+      tail -n +"${start_at}" $0 | head -n $count
+      exit 0
+    fi
+
+    echo $LINENO # ==============
+
+    show_err_line () {
+      local GREEN=$(tput setaf 2)
+      local RED='\e[0;31m'
+      local RESET_COLOR=$(tput sgr0)
+      local exit_code="$1"
+      local line="$2"
+
+      echo -e -n "!!! ERROR: "                            1>&2
+      echo -e -n "line: ${RED}${line}${RESET_COLOR} "      1>&2
+      echo -e    "exit: ${RED}${exit_code}${RESET_COLOR}" 1>&2
+
+      if bash_setup is_process_group? $$
+      then
+        ps wwf -s $$
+      fi
+    }
+
+    trap 'show_err_line $? $LINENO' ERR
+
+    echo $LINENO
+    ;;
+
   "setup_traps")
     if [[ -z "$@" ]]; then
-      nums=($($0 setup_traps with_nums))
+      nums=($($0 $action with_nums))
       start_at="$(expr ${nums[0]} + 1)"
       count="$(expr ${nums[1]} - ${nums[0]} - 1)"
       tail -n +"${start_at}" $0 | head -n $count
