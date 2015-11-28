@@ -196,11 +196,24 @@ case "$action" in
     ;;
 
   "descendent_procs")
+    # === NOTE: this has to be run like:
+    # ===     setsid bash_setup descendent_procs MY_PID  # === Tip: $$ = pid of current process.
+    # ===  If you try to use:
+    # ===     my_var="$(setsid bas... descendent_procs)"
+    # === or:
+    # ===     while read VAR; do; done < <(setsid bash... descendent_procs)
+    # === you are going to get sub-bash procs that disappear once bash... descendent_procs
+    # ===  is done. I haven't found a better way.
     pid="$1"
+    shift
+    ps_args="$@"
     pgid="$(ps -o pgid= $pid)"
     this_pid=$$
     this_pgid=$(ps -o pgid= $this_pid)
     this_parent=$(ps -o ppid= $this_pid)
+
+    echo "$pgid"
+    echo "$this_pgid"
 
     if [[ $pgid == $this_pgid ]] ; then
       echo "=== Run this using setsid" 1>&2
@@ -213,10 +226,15 @@ case "$action" in
       if [[ "$PGID" -eq "$pgid" ]]; then
         CHILDS[$PP]+=" $P"
       fi
+      echo "=== $P"
     done < <(ps -e -o pid= -o ppid= -o pgid= -o args=)
 
     walk() {
-      [[ $1 != $pid ]] && echo $1 || :
+      if [[ -z "$ps_args" ]]; then
+        [[ $1 != $pid ]] && echo $1 || :
+      else
+        [[ $1 != $pid ]] && ps -p $1 $ps_args || :
+      fi
 
       if [[ ${CHILDS[$1]+is_set} ]]; then
         for i in ${CHILDS[$1]}; do
@@ -400,10 +418,7 @@ case "$action" in
       echo -e -n "line: ${RED}${line}${RESET_COLOR} "      1>&2
       echo -e    "exit: ${RED}${exit_code}${RESET_COLOR}" 1>&2
 
-      if bash_setup is_process_group? $$
-      then
-        ps wwf -s $$
-      fi
+      setsid bash_setup descendent_procs "$$"  -o pid -o ppid -o command
     }
 
     trap 'show_err_line $? $LINENO' ERR
