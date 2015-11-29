@@ -196,54 +196,27 @@ case "$action" in
     ;;
 
   "descendent_procs")
-    # === NOTE: this has to be run like:
-    # ===     setsid bash_setup descendent_procs MY_PID  # === Tip: $$ = pid of current process.
-    # ===  If you try to use:
-    # ===     my_var="$(setsid bas... descendent_procs)"
-    # === or:
-    # ===     while read VAR; do; done < <(setsid bash... descendent_procs)
-    # === you are going to get sub-bash procs that disappear once bash... descendent_procs
-    # ===  is done. I haven't found a better way.
-    pid="$1"
+    # === bash_setup descendent_procs MY_PID
+    # === bash_setup descendent_procs MY_PID [args to: ps -p PID ...]
+    # === You can then get info on each PID using xargs:
+    # === Any other way, and you will get sub-processes/sub-shells.
+    # === Example:  bash_setup descende... | xargs ...     # ==> Prints out PIDs of xargs
+    # === Example:  while ... done < <(bash_setup desc...) # ==> Prints out PIDs of '<(bash_setup ...)'
+    target="$1"
     shift
-    ps_args="$@"
-    pgid="$(ps -o pgid= $pid)"
-    this_pid=$$
-    this_pgid=$(ps -o pgid= $this_pid)
-    this_parent=$(ps -o ppid= $this_pid)
+    this_pid="$$"
 
-    echo "$pgid"
-    echo "$this_pgid"
-
-    if [[ $pgid == $this_pgid ]] ; then
-      echo "=== Run this using setsid" 1>&2
-      exit 1
-    fi
-
-    # === Inspired from: http://superuser.com/a/784102
-    declare -A CHILDS
-    while read P PP PGID CMD;do
-      if [[ "$PGID" -eq "$pgid" ]]; then
-        CHILDS[$PP]+=" $P"
+    raw="$(pstree -p $target)"
+    while read PID
+    do
+      if [[ "$PID" != "$target" && "$PID" != "$this_pid" ]] && ps --pid $PID &>/dev/null; then
+        if [[ -z "$@" ]]; then
+          echo $PID
+        else
+          ps -p $PID "$@"
+        fi
       fi
-      echo "=== $P"
-    done < <(ps -e -o pid= -o ppid= -o pgid= -o args=)
-
-    walk() {
-      if [[ -z "$ps_args" ]]; then
-        [[ $1 != $pid ]] && echo $1 || :
-      else
-        [[ $1 != $pid ]] && ps -p $1 $ps_args || :
-      fi
-
-      if [[ ${CHILDS[$1]+is_set} ]]; then
-        for i in ${CHILDS[$1]}; do
-          walk $i
-        done
-      fi
-    }
-
-    walk $pid
+    done < <(echo "$raw" | grep -o '([0-9]\+)' | grep -o '[0-9]\+' )
     ;;
 
   "proc_tree")
@@ -418,7 +391,7 @@ case "$action" in
       echo -e -n "line: ${RED}${line}${RESET_COLOR} "      1>&2
       echo -e    "exit: ${RED}${exit_code}${RESET_COLOR}" 1>&2
 
-      setsid bash_setup descendent_procs "$$"  -o pid -o ppid -o command
+      bash_setup descendent_procs "$$" -o pid= -o ppid= -o command= || :
     }
 
     trap 'show_err_line $? $LINENO' ERR
