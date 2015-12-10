@@ -291,9 +291,8 @@ case "$action" in
       file="$(basename $path)"
 
       echo ""
-      new_cmd="$(eval echo "$cmd")"
-      echo === $CHANGE === $new_cmd
-      $new_cmd || :
+      echo === $CHANGE === "$cmd"
+      eval $cmd || :
     done < <(inotifywait --quiet --monitor --event close_write --exclude .git/ $files)
     ;;
 
