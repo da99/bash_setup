@@ -69,6 +69,10 @@ case "$action" in
     python -c "import os.path; print os.path.relpath('$1', '$2')"
     ;;
 
+  "install")
+    sudo pacmatic -S bash-completion pkgfile
+    sudo pkgfile --update
+    ;;
 
   "sizes")
     # === $ sizes
@@ -444,6 +448,13 @@ case "$action" in
     } # === setup_traps
 
     echo $LINENO
+    ;;
+
+  "pacnew")
+    # === $ pacnew
+    # === Finds any .pacnew, .pacsave, etc.
+    # From: https://bbs.archlinux.org/viewtopic.php?id=193477
+    find /etc/ \( -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave \) 2> /dev/null
     ;;
 
   *)
