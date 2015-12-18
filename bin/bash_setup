@@ -70,8 +70,8 @@ case "$action" in
     ;;
 
   "install")
-    sudo pacmatic -S bash-completion pkgfile
-    sudo pkgfile --update
+    sudo pacmatic -S                   \
+      bash-completion
     ;;
 
   "sizes")
