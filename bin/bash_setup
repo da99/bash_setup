@@ -63,6 +63,29 @@ case "$action" in
     $0 print_help $0
     ;;
 
+  "backup")
+    file="$1"
+    backup="$1.backup"
+    if [[ -f "$backup" ]]; then
+      echo "Backup file already exists: $backup" 1>&2
+      exit 1
+    fi
+    set -x
+    cp -i "$file" "$backup"
+    ;;
+
+  "restore")
+    file="$1"
+    backup="$1.backup"
+    if [[ ! -f "$backup" ]]; then
+      echo "Backup file does *not* exist: $backup" 1>&2
+      exit 1
+    fi
+    set -x
+    { [[ -f "$file" ]] && trash-put $file; } || :
+    mv -i "$backup" "$file"
+    ;;
+
   "rel_path_to_file")
     # === $ bash_setup rel_path_to_file  path  start
     # === See: https://docs.python.org/2/library/os.path.html#os.path.relpath
