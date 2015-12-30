@@ -8,3 +8,7 @@ New Machine
 ============
 
     
+
+&! in Bash:
+============
+* [Double Forking](https://blog.debiania.in.ua/posts/2013-03-13-fun-with-bash-disown.html)
