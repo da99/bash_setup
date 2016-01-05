@@ -94,7 +94,8 @@ case "$action" in
 
   "install")
     sudo pacmatic -S                   \
-      bash-completion
+      bash-completion \
+      inotify-tools
     ;;
 
   "sizes")
