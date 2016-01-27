@@ -20,6 +20,38 @@ function git_is_clean {
     fi
 }
 
+function make_link {
+  local orig=$1
+  local target=$2
+
+  # IF broken link exists, remove
+  if [[ -h "$target" && ! -e "$(readlink $target)" ]]; then
+    echo -e "\n!!! trashing broken link: $target\n"
+    trash-put $target
+  fi
+
+  # --- IF it does NOT exit?
+  if [[ ! -e "$target" ]]
+  then # --- create link
+    ln -s $orig $target
+    echo "--- Linked: $orig $target"
+  else
+
+    # --- IF is a sym link?
+    if [[ -h "$target" && "$(readlink -f "$target")" == "$(readlink -f $orig)" ]]
+    then
+      echo "Already sym link: $target"
+
+    else
+      echo -e "\n=== Check existing object: $target" 1>&2
+      echo -e "\n diff $orig $target\n\n" 1>&2
+      exit 1
+
+    fi # --- valid sym link?
+  fi # --- ! -e
+
+}
+
 
 case "$action" in
 
@@ -386,6 +418,11 @@ case "$action" in
     cmake ../.. -DCMAKE_INSTALL_PREFIX=/progs/tidy-html5 -DBUILD_SHARED_LIB:BOOL=OFF
     make
     make install
+    ;;
+
+  "make_link")
+    # === make_link  source(old)  dest(new)
+    make_link $@
     ;;
 
   "proc_tree")
