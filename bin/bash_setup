@@ -95,6 +95,10 @@ case "$action" in
     $0 print_help $0
     ;;
 
+  "trim")
+    sed 's/^#[[:space:]]\+\|[[:space:]]\+$// '
+    ;;
+
   "backup")
     file="$1"
     backup="$1.backup"
