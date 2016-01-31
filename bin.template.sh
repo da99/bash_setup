@@ -2,6 +2,7 @@
 #
 #
 THE_ARGS="$@"
+THIS_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
 
 if [[ -z "$@" ]]; then
   action="watch"
