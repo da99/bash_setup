@@ -129,9 +129,12 @@ case "$action" in
     ;;
 
   "install")
-    sudo pacmatic -S                   \
-      bash-completion \
-      inotify-tools
+    # === install  # installs various packages/libs
+    # === NOTE: libuv is a lib for async I/O
+    sudo pacmatic -S    \
+      bash-completion   \
+      inotify-tools     \
+      libuv
     ;;
 
   "sizes")
