@@ -9,7 +9,7 @@ shift
 
 set -u -e -o pipefail
 
-THIS_DIR="$(dirname $(dirname $0))"
+THIS_DIR="/apps/bash_setup"
 
 BIN=/apps/bash_setup/bin
 function git_is_clean {
@@ -131,7 +131,9 @@ case "$action" in
   "install")
     # === install  # installs various packages/libs
     # === NOTE: libuv is a lib for async I/O
-    sudo pacmatic -S    \
+    $0 make_link $THIS_DIR/dots/.bashrc       $HOME/.bashrc
+    $0 make_link $THIS_DIR/dots/.bash_profile $HOME/.bash_profile
+    sudo pacmatic -S --needed \
       bash-completion   \
       inotify-tools     \
       libuv
