@@ -3,6 +3,10 @@ bash_setup
 
 Helper bin/files for bash/command line.
 
+Parameter Expansion
+==================
+
+* [Table](http://unix.stackexchange.com/questions/122845/using-a-b-for-variable-assignment-in-scripts)
 
 New Machine
 ============
