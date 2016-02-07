@@ -129,8 +129,11 @@ case "$action" in
     ;;
 
   "upgrade")
+    # === upgrade
     if [[ "$@" == "fzf" ]]; then
-      $0 install fzf
+      cd /progs/fzf
+      git pull
+      ./install
       exit 0
     fi
     ;;
@@ -138,10 +141,7 @@ case "$action" in
   "install")
     if [[ "$@" == "fzf" ]]; then
       cd /progs
-      if [[ -d fzf ]]; then
-        cd fzf
-        git pull
-      else
+      if [[ ! -d fzf ]]; then
         git clone --depth 1 https://github.com/junegunn/fzf.git
         $0 make_link /progs/fzf $HOME/.fzf
       fi
