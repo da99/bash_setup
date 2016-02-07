@@ -128,7 +128,28 @@ case "$action" in
     python -c "import os.path; print os.path.relpath('$1', '$2')"
     ;;
 
+  "upgrade")
+    if [[ "$@" == "fzf" ]]; then
+      $0 install fzf
+      exit 0
+    fi
+    ;;
+
   "install")
+    if [[ "$@" == "fzf" ]]; then
+      cd /progs
+      if [[ -d fzf ]]; then
+        cd fzf
+        git pull
+      else
+        git clone --depth 1 https://github.com/junegunn/fzf.git
+        $0 make_link /progs/fzf $HOME/.fzf
+      fi
+
+      ~/.fzf/install
+      exit 0
+    fi
+
     # === install  # installs various packages/libs
     # === NOTE: libuv is a lib for async I/O
     $0 make_link $THIS_DIR/dots/.bashrc       $HOME/.bashrc
