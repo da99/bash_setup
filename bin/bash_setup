@@ -9,6 +9,9 @@ shift
 
 set -u -e -o pipefail
 
+TEMP_DIR=${TEMP_DIR:-"$(mktemp -d)"}
+export TEMP_DIR
+
 THIS_DIR="/apps/bash_setup"
 
 BIN=/apps/bash_setup/bin
@@ -607,6 +610,26 @@ case "$action" in
         echo -e "$(tput bold)$(tput setaf $color)${line}$(tput sgr0)";
       done
     fi
+    ;;
+
+  "is_same_file")
+    # === is_same_file  path/to/file
+    # === Used to see if file has changed.
+    # === This was created when Neovim was issue-ing a "CLOSE_WRITE,CLOSE"
+    # === event on opening a file.
+    file="$1"; shift
+    temp_dir="$TEMP_DIR"
+    if [[ ! -d "$temp_dir" ]]; then
+      mkdir -p "$temp_dir"
+    fi
+
+    temp_file="$temp_dir/${file//\//_}"
+    touch "$temp_file"
+    if diff "$file" "$temp_file" >/dev/null; then
+      exit 0
+    fi
+    cp "$file" "$temp_file"
+    exit 1
     ;;
 
   *)
