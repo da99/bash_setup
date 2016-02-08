@@ -130,35 +130,55 @@ case "$action" in
 
   "upgrade")
     # === upgrade
-    if [[ "$@" == "fzf" ]]; then
-      cd /progs/fzf
-      git pull
-      ./install
-      exit 0
-    fi
+    case "$@" in
+      "fzf")
+        cd /progs/fzf
+        git pull
+        ./install
+        ;;
+
+      "fzy")
+        $0 install fzy
+        ;;
+
+      esac
     ;;
 
   "install")
-    if [[ "$@" == "fzf" ]]; then
-      cd /progs
-      if [[ ! -d fzf ]]; then
-        git clone --depth 1 https://github.com/junegunn/fzf.git
-        $0 make_link /progs/fzf $HOME/.fzf
-      fi
+    case "$@" in
 
-      ~/.fzf/install
-      exit 0
-    fi
+      "fzf")
+        cd /progs
+        if [[ ! -d fzf ]]; then
+          git clone --depth 1 https://github.com/junegunn/fzf.git
+          $0 make_link /progs/fzf $HOME/.fzf
+        fi
 
-    # === install  # installs various packages/libs
-    # === NOTE: libuv is a lib for async I/O
-    $0 make_link $THIS_DIR/dots/.bashrc       $HOME/.bashrc
-    $0 make_link $THIS_DIR/dots/.bash_profile $HOME/.bash_profile
-    sudo pacmatic -S --needed \
-      bash-completion   \
-      inotify-tools     \
-      libuv
-    ;;
+        ~/.fzf/install
+        ;;
+
+      "fzy")
+        set -x
+        cd /progs
+        git_setup clone_or_pull https://github.com/jhawthorn/fzy
+        cd fzy
+        make
+        PREFIX="$PWD" make install
+        echo "=== done instaling fzy"
+        ;;
+
+      *)
+        # === install  # installs various packages/libs
+        # === NOTE: libuv is a lib for async I/O
+        $0 make_link $THIS_DIR/dots/.bashrc       $HOME/.bashrc
+        $0 make_link $THIS_DIR/dots/.bash_profile $HOME/.bash_profile
+        sudo pacmatic -S --needed \
+          bash-completion   \
+          inotify-tools     \
+          libuv
+        ;;
+    esac
+    ;; # === install
 
   "sizes")
     # === $ sizes
