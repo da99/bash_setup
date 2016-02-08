@@ -21,3 +21,6 @@ SSH
 ====
 * [AutoSSH](https://news.ycombinator.com/item?id=10937277)
 
+https://inconsolation.wordpress.com/2015/04/23/rmlint-the-potential-to-purge/
+https://rg3.github.io/youtube-dl/
+http://entrproject.org/
