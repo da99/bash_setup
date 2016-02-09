@@ -98,6 +98,21 @@ case "$action" in
     $0 print_help $0
     ;;
 
+  "dirname_of_bin")
+    # === dirname_of_bin path/to/file/or/dir
+    # === Removes everything after "/bin"
+    target="$@"
+    fin=""
+    set -x
+    while read -r PART; do
+      [[ -z "$PART" ]] && continue || :
+      [[ "$PART" == 'bin' ]] && break || :
+      fin="$fin/$PART"
+    done < <(dirname "$(realpath -m "$target")" | tr '/' '\n')
+    [[ -z "$fin" ]] && { echo "!!! Invalid path" 1>&2; exit 1; } || :
+    echo "$fin"
+    ;;
+
   "trim")
     sed 's/^#[[:space:]]\+\|[[:space:]]\+$// '
     ;;
