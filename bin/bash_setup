@@ -103,7 +103,6 @@ case "$action" in
     # === Removes everything after "/bin"
     target="$@"
     fin=""
-    set -x
     while read -r PART; do
       [[ -z "$PART" ]] && continue || :
       [[ "$PART" == 'bin' ]] && break || :
