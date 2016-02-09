@@ -2,7 +2,7 @@
 #
 #
 THE_ARGS="$@"
-THIS_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+THIS_DIR="$(bash_setup dirname_of_bin "$0")"
 
 if [[ -z "$@" ]]; then
   action="watch"
