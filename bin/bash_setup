@@ -98,6 +98,47 @@ case "$action" in
     $0 print_help $0
     ;;
 
+  "bump")
+    part="$1"; shift
+
+    if ! git_repo_is_clean; then
+      git status
+      echo "!!! repo is not clean" 1>&2
+      exit 1
+    fi
+
+    if [[ ! -e VERSION ]]; then
+      echo "!!! File does not exist: VERSION" 1>&2
+      exit 1
+    fi
+
+    contents="$(cat VERSION)"
+    case "$part" in
+      major)
+        num="$(cat VERSION | cut -d'.' -f1)"
+        new_num="$(($num + 1))"
+        cat VERSION | sed 's/'$num'\./'$new_num'./'
+        ;;
+
+      minor)
+        num="$(cat VERSION | cut -d'.' -f2)"
+        new_num="$(($num + 1))"
+        cat VERSION | sed 's/\.'$num'\./.'$new_num'./'
+        ;;
+
+      patch)
+        num="$(cat VERSION | cut -d'.' -f3)"
+        new_num="$(($num + 1))"
+        cat VERSION | sed 's/\.'$num'$/.'$new_num'/'
+        ;;
+
+      *)
+        echo "!!! Invalid name: $part" 1>&2
+        exit 1
+        ;;
+    esac
+    ;;
+
   "dirname_of_bin")
     # === dirname_of_bin path/to/file/or/dir
     # === Removes everything after "/bin"
