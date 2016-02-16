@@ -99,6 +99,7 @@ case "$action" in
     ;;
 
   "bump")
+    # === bump major|minor|patch
     part="$1"; shift
 
     if ! git_repo_is_clean; then
@@ -108,6 +109,7 @@ case "$action" in
     fi
 
     if [[ ! -e VERSION ]]; then
+      git tag -l || :
       echo "!!! File does not exist: VERSION" 1>&2
       exit 1
     fi
@@ -117,19 +119,19 @@ case "$action" in
       major)
         num="$(cat VERSION | cut -d'.' -f1)"
         new_num="$(($num + 1))"
-        cat VERSION | sed 's/'$num'\./'$new_num'./'
+        new_version="$(cat VERSION | sed 's/'$num'\./'$new_num'./')"
         ;;
 
       minor)
         num="$(cat VERSION | cut -d'.' -f2)"
         new_num="$(($num + 1))"
-        cat VERSION | sed 's/\.'$num'\./.'$new_num'./'
+        new_version="$(cat VERSION | sed 's/\.'$num'\./.'$new_num'./')"
         ;;
 
       patch)
         num="$(cat VERSION | cut -d'.' -f3)"
         new_num="$(($num + 1))"
-        cat VERSION | sed 's/\.'$num'$/.'$new_num'/'
+        new_version="$(cat VERSION | sed 's/\.'$num'$/.'$new_num'/')"
         ;;
 
       *)
@@ -137,6 +139,13 @@ case "$action" in
         exit 1
         ;;
     esac
+
+    set -x
+    echo "$new_version" > VERSION
+    git add VERSION
+    git commit -m "Bump: v$new_version"
+    git tag v"$new_version"
+    git push origin v"$new_version"
     ;;
 
   "dirname_of_bin")
@@ -665,6 +674,16 @@ case "$action" in
         echo -e "$(tput bold)$(tput setaf $color)${line}$(tput sgr0)";
       done
     fi
+    ;;
+
+  cp_unless_exists)
+    orig=$1; shift
+    target=$1; shift
+    if [[ -e "$target" ]]; then
+      echo "=== Skipping existing: $target"
+      exit 0
+    fi
+    cp -i "$orig" "$target"
     ;;
 
   "is_same_file")
