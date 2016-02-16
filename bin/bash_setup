@@ -98,7 +98,7 @@ case "$action" in
     $0 print_help $0
     ;;
 
-  "bump")
+  bump)
     # === bump major|minor|patch
     part="$1"; shift
 
@@ -146,9 +146,10 @@ case "$action" in
     git commit -m "Bump: v$new_version"
     git tag v"$new_version"
     git push origin v"$new_version"
+    git push
     ;;
 
-  "dirname_of_bin")
+  dirname_of_bin)
     # === dirname_of_bin path/to/file/or/dir
     # === Removes everything after "/bin"
     target="$@"
@@ -162,11 +163,11 @@ case "$action" in
     echo "$fin"
     ;;
 
-  "trim")
+  trim)
     sed 's/^#[[:space:]]\+\|[[:space:]]\+$// '
     ;;
 
-  "backup")
+  backup)
     file="$1"
     backup="$1.backup"
     if [[ -f "$backup" ]]; then
@@ -319,6 +320,17 @@ case "$action" in
       bash_setup mush > $file
       echo $file
     fi
+    ;;
+
+  mush_unless_exists)
+    template="$1"; shift
+    target="$1";   shift
+    if [[ -e "$target" ]]; then
+      echo "=== Skipping existing: $target"
+      exit 0
+    fi
+    cat "$template" | $0 mush
+    echo "=== new file: $target"
     ;;
 
   mush)
