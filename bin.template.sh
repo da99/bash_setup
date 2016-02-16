@@ -30,6 +30,16 @@ watch () {
     path="${dir}$(echo "$CHANGE" | cut -d' ' -f 3)"
     file="$(basename $path)"
 
+    # Make sure this is not a temp/swap file:
+    { [[ ! -f "$path" ]] && continue; } || :
+
+    # Check if file has changed:
+    if bash_setup is_same_file "$path"; then
+      echo "=== No change: $CHANGE"
+      continue
+    fi
+
+    # File has changed:
     echo -e "\n=== $CHANGE ($path)"
 
     if [[ "$path" =~ "$0" ]]; then
