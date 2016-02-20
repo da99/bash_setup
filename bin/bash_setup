@@ -160,6 +160,12 @@ case "$action" in
     echo "$fin"
     ;;
 
+  trim-file)
+    # === __ trim-file  path/to/file
+    # === cat path/to/file | __ trim-file
+    grep  -Pzo '(?s)\A[\s\n]*\K(.+?)(?=[\s\n]*\Z)' $@
+    ;;
+
   trim)
     sed 's/^#[[:space:]]\+\|[[:space:]]\+$// '
     ;;
