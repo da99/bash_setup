@@ -2,6 +2,7 @@
 # -*- bash -*-
 #
 #
+ARGS="$@"
 ignore="$IGNORE"
 action="$1"
 IS_DEV="$IS_DEV"
@@ -10,8 +11,19 @@ shift
 set -u -e -o pipefail
 
 THIS_DIR="/apps/bash_setup"
-
 BIN=/apps/bash_setup/bin
+
+Color_Off='\e[0m'
+Bold="$(tput bold)"
+Reset='\e[0m'
+BRed='\e[1;31m'
+Red='\e[0;31m'
+Green='\e[0;32m'
+BGreen='\e[1;32m'
+Orange='\e[0;33m'
+BOrange='\e[1;33m'
+
+
 function git_is_clean {
     if ! git_repo_is_clean
     then
@@ -475,8 +487,7 @@ case "$action" in
     # === From an answer by "technosaurus":
     #     http://stackoverflow.com/a/18295696/841803
     echo "=== Watching: $files -> $cmd"
-    while read -r CHANGE
-    do
+    while read -r CHANGE; do
       dir=$(echo "$CHANGE" | cut -d' ' -f 1)
       op=$(echo "$CHANGE" | cut -d' ' -f 2)
       path="${dir}$(echo "$CHANGE" | cut -d' ' -f 3)"
@@ -699,6 +710,97 @@ case "$action" in
       exit 0
     fi
     cp -i "$orig" "$target"
+    ;;
+
+  dirs-are-equal)
+    # === __   dirs-are-equal    dir1   dir2
+    # === This is mainly used for specs/testing.
+    dir1="$1"; shift
+    dir2="$1"; shift
+    if [[ ! -d "$dir1" ]]; then
+      echo "!!! Not a dir: $dir1" 1>&2; exit 1
+    fi
+    if [[ ! -d "$dir2" ]]; then
+      echo "!!! Not a dir: $dir2" 1>&2; exit 1
+    fi
+
+    # === Check if file names in dirs are the same:
+    # Reminder: diff 0 exit == same
+    diff <(tree "$dir1" | tail -n +2) <(tree "$dir2" | tail -n +2)
+
+    # === Compare each file:
+    while read FILE1 FILE2; do
+      if ! diff "$FILE1" "$FILE2"; then
+        exit 1
+      fi
+    done < <(paste <(find "$dir1" -type f | sort) <(find "$dir2" -type f | sort))
+    ;;
+
+  test-bash_setup)
+    TEMP="/tmp/test-bash_setup"
+    rm -rf "$TEMP"; mkdir -p "$TEMP"
+
+    # === dirs-are-equal ======================
+    DIR="$TEMP/dirs-are-equal"
+    mkdir -p "$DIR"
+    dir1="$DIR/temp1"; mkdir -p "$dir1"
+    dir2="$DIR/temp2"; mkdir -p "$dir2"
+    $0 dirs-are-equal "$dir1" "$dir2" || { stat=$?; echo -e "!!! ${Red}Failed${Color_Off} ($stat): empty dir == empty dir"; exit $stat; }
+
+    touch "$dir1/file1"; touch "$dir2/file1"
+    $0 dirs-are-equal "$dir1" "$dir2" || { stat=$?; echo -e "!!! ${Red}Failed${Color_Off} ($stat): empty file == empty file"; exit $stat; }
+
+    touch "$dir1/file2"; touch "$dir2/file2-1"
+    if $0 dirs-are-equal "$dir1" "$dir2" > $TEMP/output; then
+      echo -e "!!! ${Red}Failed${Color_Off} different file name: file2 == file2-1"
+      exit 1
+    fi
+    rm "$dir1/file2" "$dir2"/file2*
+
+    echo "three" > "$dir1/file3";
+    echo "three" > "$dir2/file3";
+    if ! $0 dirs-are-equal "$dir1" "$dir2" > $TEMP/output; then
+      echo -e "!!! ${Red}Failed${Color_Off} same names, same content: file3 == file3"
+      cat $TEMP/output 1>&2
+      exit 1
+    fi
+
+    echo "four"     > "$dir1/file4";
+    echo "not four" > "$dir2/file4";
+    if $0 dirs-are-equal "$dir1" "$dir2" > $TEMP/output; then
+      echo -e "!!! ${Red}Failed${Color_Off} same names, different content: file4 == file4"
+      cat $TEMP/output 1>&2
+      exit 1
+    fi
+    # === dirs-are-equal DONE =================
+
+    echo -e "=== ${Green}Testing${Color_Off} is done"
+    ;;
+
+  test-and-watch)
+    # === __  test-and-watch  # Used for testing bash_setup
+    $0 test-bash_setup || :
+
+    echo "=== Watching $THIS_DIR:"
+    while read -r CHANGE; do
+      dir=$(echo "$CHANGE" | cut -d' ' -f 1)
+      op=$(echo "$CHANGE" | cut -d' ' -f 2)
+      path="${dir}$(echo "$CHANGE" | cut -d' ' -f 3)"
+      file="$(basename $path)"
+
+      if [[ ! -f "$path" ]]; then
+        continue
+      fi
+
+      if [[ "$(realpath -m "$path")" == "$(realpath -m "$0")" ]]; then
+        echo ""
+        echo "=== Reloading..."
+        break
+      fi
+
+      echo "=== $CHANGE ($path)"
+    done < <(inotifywait --quiet --monitor --event close_write --exclude .git/ -r "$THIS_DIR")
+    $0 $ARGS
     ;;
 
   is_same_file)
