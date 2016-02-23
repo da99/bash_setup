@@ -730,6 +730,8 @@ case "$action" in
     ;;
 
   diff)
+    # === __   diff    "file1"        "file2"
+    # === __   diff    "file.json"    "file.json"
     FILE1="$1"; shift
     FILE2="$1"; shift
     if [[ "$FILE1" == *.json && "$FILE2" == *.json ]]; then
