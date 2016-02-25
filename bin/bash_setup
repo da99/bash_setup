@@ -729,6 +729,11 @@ case "$action" in
     fi
     ;;
 
+  remove-empty-lines)
+    # ===  __  remove-empty-lines   "$FILE"
+    grep -v --extended-regexp '^\s*$' $@
+    ;;
+
   diff)
     # === __   diff    "file1"        "file2"
     # === __   diff    "file.json"    "file.json"
@@ -739,7 +744,7 @@ case "$action" in
         <(node -pe "JSON.parse(process.argv[1])" "$(cat "$FILE1")") \
         <(node -pe "JSON.parse(process.argv[1])" "$(cat "$FILE2")")
     else
-      diff "$FILE1" "$FILE2"
+      diff <($0 remove-empty-lines "$FILE1")  <($0 remove-empty-lines "$FILE2")
     fi
     ;;
 
