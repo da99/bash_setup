@@ -477,22 +477,13 @@ case "$action" in
     ;;
 
   "watch")
-    # === $ bash_setup watch  my_script -myargs -myargs"
+    # === $ bash_setup watch  "my args to inotifywait" "my cmd -with -args"
 
     #
     #  For more info on inotifywait:
     #    http://manpages.ubuntu.com/manpages/hardy/man1/inotifywait.1.html
     #
-    #  The script will send the output
-    #  of inotifywaut to `my_script`.
-    #
-    #  Files/dirs with .git in the name are ignored.
-    #  Example:
-    #     .git
-    #     ./.git
-    #     ./dir/file.git/
-
-    files="$1"; shift
+    args="$1"; shift
     cmd="$@"
 
     if [[ -z "$@" ]]
@@ -503,18 +494,18 @@ case "$action" in
 
     # === From an answer by "technosaurus":
     #     http://stackoverflow.com/a/18295696/841803
-    echo "=== Watching: $files -> $cmd"
+    echo "=== Watching: $args -> $cmd"
     while read -r CHANGE; do
       dir=$(echo "$CHANGE" | cut -d' ' -f 1)
       op=$(echo "$CHANGE" | cut -d' ' -f 2)
       path="${dir}$(echo "$CHANGE" | cut -d' ' -f 3)"
       file="$(basename $path)"
 
-      [[ ! -f "$path" ]] && continue || :
+      echo -n "=== $CHANGE"
+      [[ ! -f "$path" ]] && echo " (Skipping)" && continue || :
       echo ""
-      echo === $CHANGE === "$cmd"
       $cmd || { stat="$?"; echo -e "=== ${Red}Failed${Color_Off}: $stat"; }
-    done < <(inotifywait --quiet --monitor --event close_write --exclude .git/ $files)
+    done < <(inotifywait --quiet --monitor --event close_write --exclude .git/ $args)
     ;;
 
 
