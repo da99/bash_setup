@@ -8,8 +8,9 @@ specs () {
 
 # === {{CMD}}  "my text"
 # === {{CMD}}  "keyword"  "my text with keyword"
+# === NOTE: Prints to STDERR
 RED () {
   local BRed='\e[1;31m'
   local Red='\e[0;31m'
-  COLORIZE "$BRed" "$@"
+  COLORIZE "$BRed" "$@" 1>&2
 } # === end function

@@ -3,7 +3,7 @@ specs () {
   bash_setup COLORIZE "$(tput bold)"  "this is {{bold}}"
 }
 
-# === {{CMD}}  "\\e[0;33m"  "my {{text}}"
+# === {{CMD}}  "MY_ESCAPE_SEQUENCE"  "my {{text}}"
 COLORIZE () {
   local ESCAPED_COLOR
   local COLOR_OFF="\\e\[0m"
