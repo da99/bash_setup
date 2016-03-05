@@ -1,3 +1,8 @@
+# === {{CMD}}  "{{Passed}}: my text"
+# === {{CMD}}  "mY {{teSts}} aLl PaSs"
+
+source $THIS_DIR/bin/lib/COLORIZE.sh
+
 specs () {
   bash_setup GREEN "=== {{PASSED}}: specs"
   bash_setup GREEN "=== {{PASSED}}dddd: specs"
@@ -7,9 +12,6 @@ specs () {
   bash_setup GREEN "=== {{PASSED}}: specs"
 }
 
-source $THIS_DIR/bin/lib/COLORIZE.sh
-# === {{CMD}}  "{{Passed}}: my text"
-# === {{CMD}}  "mY {{teSts}} aLl PaSs"
 GREEN () {
   local Green='\e[0;32m'
   local BGreen='\e[1;32m'

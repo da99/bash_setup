@@ -1,4 +1,7 @@
 
+specs () {
+  bash_setup COLORIZE "$(tput bold)"  "this is {{bold}}"
+}
 
 # === {{CMD}}  "\\e[0;33m"  "my {{text}}"
 COLORIZE () {
