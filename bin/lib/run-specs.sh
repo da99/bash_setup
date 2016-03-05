@@ -4,7 +4,8 @@ run-specs () {
   if [[ -z "$@" ]]; then
     while read FILE; do
       bash_setup BOLD "=== Specs: {{$FILE}}"
-      bash_setup run-specs "$FILE" || bash_setup RED "=== {{Failed}}"
+      bash_setup run-specs "$FILE" || \
+        { stat=$?; bash_setup RED "=== Spec {{Failed}} with exit status: $stat"; exit $stat; }
       echo ""
     done < <(grep -r -l -P '^specs\s*\(\)' bin/lib)
 

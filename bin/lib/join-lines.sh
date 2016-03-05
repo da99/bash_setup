@@ -1,6 +1,23 @@
 
 # === Join multiple lines into one:
 # === {{CMD}}  "content"  "delimiter"
+
+specs () {
+  bash_setup join-lines "1\n2\n3" ","
+
+  # "a, b"
+  bash_setup join-lines  "a\nb" ", "
+
+  # "a, b"
+  bash_setup join-lines  "a\nb\n" ", "
+
+  # "a"
+  bash_setup join-lines  "a\n" ", "
+
+  # "a"
+  bash_setup join-lines  "a" ", "
+}
+
 join-lines () {
 
   content="$1"; shift
@@ -26,15 +43,3 @@ join-lines () {
 
 } # === end function
 
-# Specs ===
-# bash_setup join-lines  "a\nb" ", "
-# "a, b"
-
-# bash_setup join-lines  "a\nb\n" ", "
-# "a, b"
-
-# bash_setup join-lines  "a\n" ", "
-# "a"
-
-# bash_setup join-lines  "a" ", "
-# "a"
