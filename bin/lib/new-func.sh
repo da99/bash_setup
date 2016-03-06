@@ -15,5 +15,5 @@ new-func () {
   echo "# === {{CMD}} ..." >> "$FILE"
   echo "${name} () {" >> "$FILE"
   echo "} # === end function" >> "$FILE"
-  bash_setup BOLD "=== Created: {{${FILE}}"
+  bash_setup BOLD "=== Created: {{${FILE}}}"
 }
