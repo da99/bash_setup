@@ -6,6 +6,7 @@ source $THIS_DIR/bin/lib/COLORIZE.sh
 specs () {
   bash_setup ORANGE  "my string that is {{ orange }}"
   bash_setup ORANGE  "this is also orange:  {{my {text}}}"
+  bash_setup ORANGE  "this is also orange:  {{my {text}}} and {{this}}"
 }
 
 ORANGE () {
