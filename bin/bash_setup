@@ -319,26 +319,6 @@ case "$action" in
     exit 0
     ;;
 
-  "new_bin")
-    # === $ bash_setup  new_bin
-    # === $ bash_setup  new_bin  name
-    if [[ -z "$@" ]]; then
-      file_name="$(basename $(pwd))"
-    else
-      file_name=$1
-      shift
-    fi
-    if [[ -f bin/${file_name} ]]; then
-      echo "=== File already exists."
-    else
-      mkdir -p bin
-
-      cp -i /apps/bash_setup/bin.template.sh bin/${file_name}
-      echo "=== Wrote: bin/${file_name}"
-    fi
-
-    chmod +x bin/${file_name}
-    ;;
 
   mush?)
     # === $ bash_setup mush? path/to/file.file
