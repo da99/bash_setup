@@ -261,7 +261,7 @@ case "$action" in
       "fzy")
         set -x
         cd /progs
-        git_setup clone_or_pull https://github.com/jhawthorn/fzy
+        git_setup clone-or-pull https://github.com/jhawthorn/fzy
         cd fzy
         make
         PREFIX="$PWD" make install
