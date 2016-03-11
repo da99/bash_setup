@@ -16,7 +16,7 @@ new-bin () {
   else
     mkdir -p bin
 
-    cp -i /apps/bash_setup/bin.template.sh "bin/${file_name}"
+    cp -i "$THIS_DIR/templates/bin.sh" "bin/${file_name}"
     bash_setup GREEN "=== Wrote: {{bin/${file_name}}}"
   fi
 

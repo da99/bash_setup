@@ -4,6 +4,7 @@
 new-func () {
   local name="$1"; shift
   local FILE="bin/lib/${name}.sh"
+  local TEMPLATE="$THIS_DIR/templates/${name}.sh"
 
   mkdir -p bin/lib
   if [[ -s "$FILE" ]]; then
@@ -11,9 +12,14 @@ new-func () {
     exit 1
   fi
 
-  echo "" >> "$FILE"
-  echo "# === {{CMD}} ..." >> "$FILE"
-  echo "${name} () {" >> "$FILE"
-  echo "} # === end function" >> "$FILE"
-  bash_setup BOLD "=== Created: {{${FILE}}}"
+  if [[ -s "$TEMPLATE" ]]; then
+    cp -i "$TEMPLATE" "$FILE"
+  else
+    echo "" >> "$FILE"
+    echo "# === {{CMD}} ..." >> "$FILE"
+    echo "${name} () {" >> "$FILE"
+    echo "} # === end function" >> "$FILE"
+  fi
+
+  bash_setup GREEN "=== Created: {{${FILE}}}"
 }
