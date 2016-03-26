@@ -46,7 +46,7 @@ function make_link {
   if [[ ! -e "$target" ]]
   then # --- create link
     ln -s $orig $target
-    echo "--- Linked: $orig $target"
+    bash_setup GREEN "--- Linked: $orig {{$target}}"
   else
 
     # --- IF is a sym link?
@@ -55,7 +55,7 @@ function make_link {
       echo "Already sym link: $target"
 
     else
-      echo -e "\n=== Check existing object: $target" 1>&2
+      bash_setup RED -e "\n=== Check existing object: {{$target}}"
       echo -e "\n diff $orig $target\n\n" 1>&2
       exit 1
 
