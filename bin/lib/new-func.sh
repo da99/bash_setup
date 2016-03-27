@@ -16,7 +16,7 @@ new-func () {
     cp -i "$TEMPLATE" "$FILE"
   else
     echo "" >> "$FILE"
-    echo "# === {{CMD}} ..." >> "$FILE"
+    echo "# === {{CMD}}  ..." >> "$FILE"
     echo "${name} () {" >> "$FILE"
     echo "} # === end function" >> "$FILE"
   fi

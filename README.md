@@ -1,4 +1,4 @@
-bash_setup
+bash\_setup
 ==========
 
 Helper bin/files for bash/command line.
