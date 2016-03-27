@@ -6,6 +6,8 @@ specs () {
   bash_setup COLORIZE "$(tput bold)"  "this is {{bold {curly}}} and {{this {too}}}"
   bash_setup COLORIZE "$(tput bold)"  "this has no {{new line}}"  "-n"
   echo " ... but this does"
+  bash_setup COLORIZE "$(tput bold)"  "this has is {{multi
+  line}}"
 }
 
 # === {{CMD}}  "MY_ESCAPE_SEQUENCE"  "my {{text}}"
@@ -25,7 +27,7 @@ COLORIZE () {
     TEXT="$@"
   fi
 
-  echo -e $ECHO_ARGS "$TEXT" | perl -p -e "s/\{\{(.+?)\}\}(?!\})/${ESCAPED_COLOR}\1${COLOR_OFF}/g"
+  echo $ECHO_ARGS "$TEXT" | perl -p -00 -e "s/\{\{(.+?)\}\}(?!\})/${ESCAPED_COLOR}\1${COLOR_OFF}/gs"
 
 } # === end function
 
