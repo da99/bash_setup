@@ -15,7 +15,7 @@ template-render () {
 
   node bin/lib/template-render.js "$DATA" "$TEMPLATE"
 
-} # === end function
+} # === end function ================================================================================
 
 specs () {
   local TMP="/tmp/bash_setup/template-render"
@@ -41,5 +41,10 @@ specs () {
   should-match "RESULT: ted General Creative"  "bash_setup template-render  data.json  template.txt"
   # =================================================================================================
 
-
-}
+  # =================================================================================================
+  reset-fs
+  bash_setup BOLD "=== Renders: {{ENV vars}}"
+  echo "RESULT: {{NAME}} {{CORP}}" > template.txt
+  NAME="ted" CORP="General Creative" should-match "RESULT: ted General Creative"  "bash_setup template-render  ENV  template.txt"
+  # =================================================================================================
+} # === specs

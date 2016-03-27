@@ -5,10 +5,11 @@ const Template   = process.argv[3];
 const FS         = require("fs");
 const PATH       = require("path");
 
-const source = FS.readFileSync(Template).toString();
+const source   = FS.readFileSync(Template).toString();
 const template = Handlebars.compile(source, {strict: true});
 
-var data = JSON.parse(FS.readFileSync(Data).toString());
+var data = (PATH.basename(Data) === 'ENV' && !FS.existsSync(Data)) ? process.env : JSON.parse(FS.readFileSync(Data).toString());
+
 
 var current = source;
 var old     = "";
