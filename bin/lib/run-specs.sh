@@ -47,6 +47,8 @@ report-fail () {
   exit $stat
 }
 
+# should-pass  "my cmd with args"
+# should-pass  my cmd with args
 should-pass () {
   local stat
   set +e
@@ -77,5 +79,44 @@ should-exit () {
     bash_setup RED "=== Spec wanted status $expect but got {{$actual}}"
   fi
 }
+
+#  should-match  "EXPECT"   "my-cmd -with -args"
+should-match () {
+  local EXPECT="$1"; shift
+  local CMD="$1"; shift
+  local STAT
+  local ACTUAL
+
+  set +e
+  ACTUAL="$(eval "$CMD")"
+  STAT="$?"
+  set -e
+
+  if [[ "$ACTUAL" != "$EXPECT" ]]; then
+    bash_setup GREEN  "=== {{Passed}}: $CMD"
+  else
+    bash_setup RED "=== EXPECTED: {{$ACTUAL}}  !=  $EXPECT"
+  fi
+}
+
+# should-match-regexp  "my regexp"  "my cmd -with -args"
+should-match-regexp () {
+  local EXPECT="$1"; shift
+  local CMD="$1"; shift
+  local STAT
+  local ACTUAL
+
+  set +e
+  ACTUAL="$(eval "$CMD")"
+  STAT="$?"
+  set -e
+
+  if [[ "$ACTUAL" =~ $EXPECT ]]; then
+    bash_setup GREEN  "=== {{Passed}}: $CMD"
+  else
+    bash_setup RED "=== EXPECTED: {{$ACTUAL}}  =~  $EXPECT"
+  fi
+}
+
 
 
