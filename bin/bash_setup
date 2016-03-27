@@ -2,6 +2,7 @@
 # -*- bash -*-
 #
 #
+
 ARGS="$@"
 ignore="$IGNORE"
 action="$1"
@@ -320,43 +321,6 @@ case "$action" in
     ;;
 
 
-  mush?)
-    # === $ bash_setup mush? path/to/file.file
-    # === If file exists, exists w/ 0, prints nothing to STDOUT.
-    # === If file does NOT exists, prints to file,
-    # ===  prints/repeats path/to/file.file to STDOUT
-    file="$1"
-    shift
-    if [[ -f $file ]]; then
-      exit 0
-    else
-      bash_setup mush > $file
-      echo $file
-    fi
-    ;;
-
-  mush_unless_exists)
-    template="$1"; shift
-    target="$1";   shift
-    if [[ -e "$target" ]]; then
-      echo "=== Skipping existing: $target"
-      exit 0
-    fi
-    cat "$template" | $0 mush
-    echo "=== new file: $target"
-    ;;
-
-  mush)
-    # === Wrapper for mush (Mustache for Bash)
-    # === https://github.com/jwerle/mush
-    # === Use it just like the mush executable
-    mush="${THIS_DIR}/bin/mush"
-    if [[ ! -f "$mush" ]]; then
-      wget -O $mush "https://raw.githubusercontent.com/jwerle/mush/master/mush.sh"
-      chmod +x $mush
-    fi
-    $mush "$@"
-    ;;
 
   "Capitalize")
     # === $ Capitalize wOrD => Word
