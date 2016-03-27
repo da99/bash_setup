@@ -93,9 +93,13 @@ should-match () {
   set -e
 
   if [[ "$ACTUAL" != "$EXPECT" ]]; then
-    bash_setup GREEN  "=== {{Passed}}: $CMD"
+    if [[ -z "$ACTUAL" ]]; then
+      ACTUAL="[NULL STRING]"
+    fi
+    bash_setup RED "=== MISMATCH: \"{{$ACTUAL}}\"  !=  \"$EXPECT\""
+    exit 1
   else
-    bash_setup RED "=== EXPECTED: {{$ACTUAL}}  !=  $EXPECT"
+    bash_setup GREEN  "=== {{Passed}}: $CMD"
   fi
 }
 
