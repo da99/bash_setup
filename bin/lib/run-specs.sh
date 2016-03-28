@@ -8,8 +8,7 @@ run-specs () {
       echo ""
     done < <(grep -r -l -P '^specs\s*\(\)' bin/lib)
 
-    set -x
-    files="$(grep -r -l -v -P -z '^specs\s*\(\)' bin/lib || :)"
+    files="$(grep -r -L -P '^specs\s*\(\)' bin/lib || :)"
     if [[ -n "$files" ]]; then
       bash_setup ORANGE "=== Files {{without}} specs:"
       echo -e "$files"
