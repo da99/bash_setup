@@ -1,9 +1,18 @@
 
 # === {{CMD}}  data.json  template.handlebars
+# === NAME=VAL OTHER=value  {{CMD}}  template.handlebars
 template-render () {
 
   local DATA="$(realpath -m "$1")"; shift
-  local TEMPLATE="$(realpath -m "$1")"; shift
+  local TEMPLATE
+
+  if [[ -z "$@" ]]; then
+    TEMPLATE="$DATA"
+    DATA="ENV"
+  else
+    local TEMPLATE="$(realpath -m "$1")"; shift
+  fi
+
   local HANDLE_BARS="$THIS_DIR/node_modules/handlebars"
 
   cd $THIS_DIR
@@ -45,6 +54,6 @@ specs () {
   reset-fs
   bash_setup BOLD "=== Renders: {{ENV vars}}"
   echo "RESULT: {{NAME}} {{CORP}}" > template.txt
-  NAME="ted" CORP="General Creative" should-match "RESULT: ted General Creative"  "bash_setup template-render  ENV  template.txt"
+  should-match "RESULT: ted General Creative"  "NAME=\"ted\" CORP=\"General Creative\" bash_setup template-render template.txt"
   # =================================================================================================
 } # === specs
