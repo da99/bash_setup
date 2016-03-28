@@ -36,7 +36,7 @@ specs () {
 
   # =================================================================================================
   reset-fs
-  bash_setup BOLD "=== Renders: {{data.json  template.txt}}"
+  bash_setup BOLD "=== Renders: {{data.json  template.txt}}: " "-n"
   echo '{"name":"ted","corp":"General Creative"}' > data.json
   echo "RESULT: {{name}}  {{corp}}"               > template.txt
   should-match "RESULT: ted  General Creative"  "bash_setup template-render  data.json  template.txt"
@@ -44,7 +44,7 @@ specs () {
 
   # =================================================================================================
   reset-fs
-  bash_setup BOLD "=== Renders: {{nested vars}}"
+  bash_setup BOLD "=== Renders: {{nested vars}}: " "-n"
   echo '{"name":"ted","corp":"General Creative","full":"{{name}} {{corp}}"}' > data.json
   echo "RESULT: {{full}}" > template.txt
   should-match "RESULT: ted General Creative"  "bash_setup template-render  data.json  template.txt"
@@ -52,7 +52,7 @@ specs () {
 
   # =================================================================================================
   reset-fs
-  bash_setup BOLD "=== Renders: {{ENV vars}}"
+  bash_setup BOLD "=== Renders: {{ENV vars}}: " "-n"
   echo "RESULT: {{NAME}} {{CORP}}" > template.txt
   should-match "RESULT: ted General Creative"  "NAME=\"ted\" CORP=\"General Creative\" bash_setup template-render template.txt"
   # =================================================================================================
