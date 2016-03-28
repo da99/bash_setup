@@ -56,4 +56,19 @@ specs () {
   echo "RESULT: {{NAME}} {{CORP}}" > template.txt
   should-match "RESULT: ted General Creative"  "NAME=\"ted\" CORP=\"General Creative\" bash_setup template-render template.txt"
   # =================================================================================================
+
+
+  # =================================================================================================
+  reset-fs
+  bash_setup BOLD "=== Renders: {{dir of vars}}: " "-n"
+  echo "tEd" > NAME
+  echo "General Creative" > CORP
+  echo "{{NAME}} {{CORP}}" > template.txt
+  should-match "tEd General Creative"  "bash_setup template-render  $TMP  template.txt"
+  # =================================================================================================
+
+
 } # === specs
+
+
+
