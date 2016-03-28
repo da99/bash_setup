@@ -6,7 +6,10 @@ const Data       = ARGS.pop() || "ENV";
 const FS         = require("fs");
 const PATH       = require("path");
 
-const source   = FS.readFileSync(Template).toString();
+
+const source   = template_to_string(Template);
+
+
 const template = Handlebars.compile(source, {strict: true});
 
 var data = data_to_object(Data);
@@ -29,9 +32,7 @@ function data_to_object(Data) {
   if (FS.statSync(Data).isFile())
     return JSON.parse(FS.readFileSync(Data).toString());
 
-  if (!FS.statSync(Data).isDirectory())
-    throw new Error("Invalid value for data: " + Data);
-
+  // === We assume it's a directory:
   const files = FS.readdirSync(Data);
   var file;
   var data = {};
@@ -42,3 +43,8 @@ function data_to_object(Data) {
 
   return data;
 } // === function
+
+function template_to_string(FD) {
+  return FS.readFileSync(FD).toString();
+}
+
