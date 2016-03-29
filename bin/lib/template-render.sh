@@ -1,6 +1,7 @@
 
 # === {{CMD}}  data.json  template.html
-# === {{CMD}}             template.html  # Uses env variables
+# === {{CMD}}  path/2/dir template.html  # Gets VARs from filenames and content.
+# === {{CMD}}             template.html  # Uses ENV variables.
 template-render () {
 
   local +x  DIR="$PWD"
