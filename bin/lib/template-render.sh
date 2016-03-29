@@ -1,28 +1,19 @@
 
-# === {{CMD}}  data.json  template.handlebars
-# === NAME=VAL OTHER=value  {{CMD}}  template.handlebars
+# === {{CMD}}  data.json  template.html
+# === {{CMD}}             template.html  # Uses env variables
 template-render () {
 
-  local DATA="$(realpath -m "$1")"; shift
-  local TEMPLATE
+  local +x  DIR="$PWD"
 
-  if [[ -z "$@" ]]; then
-    TEMPLATE="$DATA"
-    DATA="ENV"
-  else
-    local TEMPLATE="$(realpath -m "$1")"; shift
-  fi
-
-  local HANDLE_BARS="$THIS_DIR/node_modules/handlebars"
-
-  cd $THIS_DIR
-
-  if [[ ! -d "$HANDLE_BARS" ]]; then
+  # === Install Handlebars:
+  if [[ ! -d "$THIS_DIR/node_modules/handlebars" ]]; then
+    cd $THIS_DIR
     bash_setup BOLD "=== Installing: {{handlebars}}" 1>&2
     npm install handlebars
+    cd "$DIR"
   fi
 
-  node bin/lib/template-render.js "$DATA" "$TEMPLATE"
+  node $THIS_DIR/bin/lib/template-render.js "$@"
 
 } # === end function ================================================================================
 
