@@ -13,6 +13,7 @@ template-render () {
     cd "$DIR"
   fi
 
+  # === Generate the template:
   node $THIS_DIR/bin/lib/template-render.js "$@"
 
 } # === end function ================================================================================
