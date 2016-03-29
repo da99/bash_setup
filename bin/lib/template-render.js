@@ -6,14 +6,13 @@ const Data       = ARGS.pop() || "ENV";
 const FS         = require("fs");
 const PATH       = require("path");
 
-
-const source   = template_to_string(Template);
-
-
+const source   = FS.readFileSync(Template).toString();
 const template = Handlebars.compile(source, {strict: true});
+const data     = data_to_object(Data);
 
-var data = data_to_object(Data);
-
+// === Loop: each iteration compile '{{ }}'
+// === Finish: when no more '{{ }}' can be processed.
+// === Reason for loop: Nested vars. '{{ }}' that contain other '{{ }}'
 var current = source;
 var old     = "";
 while (current !== old) {
@@ -21,8 +20,10 @@ while (current !== old) {
   current = Handlebars.compile(current, {strict: true})(data);
 }
 
+// === Output:
 console.log(current);
 
+process.exit(0);
 // ==============================================================================
 
 function data_to_object(Data) {
@@ -44,7 +45,5 @@ function data_to_object(Data) {
   return data;
 } // === function
 
-function template_to_string(FD) {
-  return FS.readFileSync(FD).toString();
-}
+
 
