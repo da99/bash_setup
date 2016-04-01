@@ -177,20 +177,6 @@ case "$action" in
     git push
     ;;
 
-  dirname_of_bin)
-    # === dirname_of_bin path/to/file/or/dir
-    # === Removes everything after "/bin"
-    target="$@"
-    fin=""
-    while read -r PART; do
-      [[ -z "$PART" ]] && continue || :
-      [[ "$PART" == 'bin' ]] && break || :
-      fin="$fin/$PART"
-    done < <(dirname "$(realpath -m "$target")" | tr '/' '\n')
-    [[ -z "$fin" ]] && { echo "!!! Invalid path" 1>&2; exit 1; } || :
-    echo "$fin"
-    ;;
-
   trim-file)
     # === __ trim-file  path/to/file
     # === cat path/to/file | __ trim-file
