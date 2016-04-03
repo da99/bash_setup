@@ -68,62 +68,8 @@ function make_link {
 
 case "$action" in
 
-  "print_help")
-    # === === Extract switch options from file
-    # ===      that are followed by: # ===
-    # === $ bash_setup print_help path/to/file
-
-    file="$1"
-    shift
-    cmd_print=""
-    cmd=""
-    nl_printed=""
-    BIN_NAME="$(basename "$file")"
-    IFS=$'\n'
-    for line in $(cat $file)
-    do
-      if [[ $line =~ ^[\*\ +0-9A-Za-z\_\-\'\"]+\)$ ]]; then
-        cmd=$(echo $line | tr -d '"'')')
-        cmd_print=""
-      else
-        if [[ -n "$cmd" && $line =~ "# ===" ]]; then
-          if [[ -z $cmd_print ]]; then
-            echo $cmd
-            cmd_print="true"
-          fi
-          echo ${line/'# ==='/''}
-          nl_printed=""
-        else
-          cmd=""
-          if [[ -z $nl_printed ]]; then
-            echo ""
-            nl_printed="true"
-          fi
-        fi
-      fi
-
-    done
-
-    dir_functions="$(dirname "$file")/lib"
-    [[ ! -d "$dir_functions" ]] && exit 0 || :
-
-    while read FILE; do
-      FUNCTION_NAME="$(basename "$FILE" .sh)"
-      echo -e "=== ${Bold}${FUNCTION_NAME}${Color_Off}"
-      while IFS= read LINE; do
-        if [[ "$LINE" =~ ^"# ===" ]]; then
-          LINE=${LINE/'# ==='/''}
-          LINE=${LINE/'{{CMD}}'/"${Green}${BIN_NAME}${Color_Off}  ${FUNCTION_NAME} "}
-          LINE=${LINE/'{{BIN}}'/"${Green}${BIN_NAME}${Color_Off}"}
-          LINE=${LINE/'{{NAME}}'/"${FUNCTION_NAME}"}
-          echo -e "   $LINE"
-        fi
-      done < <(cat "$FILE")
-    done < <(find "$dir_functions" -type f -iname "*.sh" | sort )
-    ;;
-
   "help"|"--help")
-    $0 print_help $0
+    $0 print-help $0
     ;;
 
   bump)
