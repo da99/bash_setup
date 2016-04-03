@@ -600,31 +600,6 @@ case "$action" in
     fi
     ;;
 
-  dirs-are-equal)
-    # === __   dirs-are-equal    dir1   dir2
-    # === This is mainly used for specs/testing.
-    dir1="$1"; shift
-    dir2="$1"; shift
-    if [[ ! -d "$dir1" ]]; then
-      echo "!!! Not a dir: $dir1" 1>&2; exit 1
-    fi
-    if [[ ! -d "$dir2" ]]; then
-      echo "!!! Not a dir: $dir2" 1>&2; exit 1
-    fi
-
-    # === Check if file names in dirs are the same:
-    # Reminder: diff 0 exit == same
-    diff <(tree "$dir1" | tail -n +2) <(tree "$dir2" | tail -n +2) || { stat=$?; echo "DIR1: $dir1"; echo "DIR2: $dir2"; exit $stat; }
-
-    # === Compare each file:
-    while read FILE1 FILE2; do
-      if ! $0 diff "$FILE1" "$FILE2"; then
-        echo "FILE1: $FILE1" 1>&2
-        echo "FILE2: $FILE2" 1>&2
-        exit 1
-      fi
-    done < <(paste <(find "$dir1" -type f | sort) <(find "$dir2" -type f | sort))
-    ;;
 
   test-bash_setup)
     TEMP="/tmp/test-bash_setup"
