@@ -72,57 +72,6 @@ case "$action" in
     $0 print-help $0
     ;;
 
-  bump)
-    # === bump major|minor|patch
-    part="$1"; shift
-
-    if ! git_repo_is_clean; then
-      git status
-      echo "!!! repo is not clean" 1>&2
-      exit 1
-    fi
-
-    if [[ ! -e VERSION ]]; then
-      git tag -l || :
-      echo "!!! File does not exist: VERSION" 1>&2
-      exit 1
-    fi
-
-    contents="$(cat VERSION)"
-    case "$part" in
-      major)
-        num="$(cat VERSION | cut -d'.' -f1)"
-        new_num="$(($num + 1))"
-        new_version="$(cat VERSION | sed 's/'$num'\./'$new_num'./')"
-        ;;
-
-      minor)
-        num="$(cat VERSION | cut -d'.' -f2)"
-        new_num="$(($num + 1))"
-        new_version="$(cat VERSION | sed 's/\.'$num'\./.'$new_num'./')"
-        ;;
-
-      patch)
-        num="$(cat VERSION | cut -d'.' -f3)"
-        new_num="$(($num + 1))"
-        new_version="$(cat VERSION | sed 's/\.'$num'$/.'$new_num'/')"
-        ;;
-
-      *)
-        echo "!!! Invalid name: $part" 1>&2
-        exit 1
-        ;;
-    esac
-
-    set -x
-    echo "$new_version" > VERSION
-    git add VERSION
-    git commit -m "Bump: v$new_version"
-    git tag v"$new_version"
-    git push origin v"$new_version"
-    git push
-    ;;
-
   trim-file)
     # === __ trim-file  path/to/file
     # === cat path/to/file | __ trim-file
