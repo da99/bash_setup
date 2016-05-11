@@ -3,5 +3,10 @@
 #
 set -u -e -o pipefail -x
 
-yaourt -S $@
+if [[ "$@" == "upgrade" ]]; then
+  yaourt -Syua
+else
+  yaourt -S $@
+fi
+
 

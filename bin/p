@@ -3,5 +3,9 @@
 #
 set -u -e -o pipefail
 
-sudo pacmatic -S $@
+if [[ "$@" == "upgrade" ]]; then
+  sudo pacman -Syu
+else
+  sudo pacmatic -S $@
+fi
 
