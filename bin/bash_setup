@@ -138,16 +138,41 @@ case "$action" in
         fi
 
         ~/.fzf/install
+
+        cd /progs
+        if [[ -d fzy ]]; then
+          cd fzy
+          git pull
+        else
+          git clone https://github.com/jhawthorn/fzy
+          cd fzy
+        fi
+
         ;;
 
       "fzy")
         set -x
         cd /progs
-        git_setup clone-or-pull https://github.com/jhawthorn/fzy
-        cd fzy
-        make
-        PREFIX="$PWD" make install
-        echo "=== done instaling fzy"
+        if [[ -d fzy ]]; then
+          cd fzy
+          OLD_TAG="$(git rev-parse HEAD)"
+          git pull
+          NEW_TAG="$(git rev-parse HEAD)"
+        else
+          OLD_TAG=""
+          git clone https://github.com/jhawthorn/fzy
+          NEW_TAG="[new]"
+        fi
+
+        if [[ "$OLD_TAG" != "$NEW_TAG" ]]; then
+          cd fzy
+          PREFIX="$PWD/bin" make
+          PREFIX="$PWD/bin" make install
+          echo "=== done instaling fzy"
+        else
+          echo "=== fzy already the latest."
+
+        fi
         ;;
 
       *)
