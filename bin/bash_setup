@@ -78,10 +78,6 @@ case "$action" in
     grep  -Pzo '(?s)\A[\s\n]*\K(.+?)(?=[\s\n]*\Z)' $@
     ;;
 
-  trim)
-    sed 's/^#[[:space:]]\+\|[[:space:]]\+$// '
-    ;;
-
   backup)
     file="$1"
     backup="$1.backup"
@@ -89,7 +85,7 @@ case "$action" in
       echo "Backup file already exists: $backup" 1>&2
       exit 1
     fi
-    set -x
+    set '-x'
     cp -i "$file" "$backup"
     ;;
 
@@ -100,7 +96,7 @@ case "$action" in
       echo "Backup file does *not* exist: $backup" 1>&2
       exit 1
     fi
-    set -x
+    set '-x'
     { [[ -f "$file" ]] && trash-put $file; } || :
     mv -i "$backup" "$file"
     ;;
@@ -151,7 +147,7 @@ case "$action" in
         ;;
 
       "fzy")
-        set -x
+        set '-x'
         cd /progs
         if [[ -d fzy ]]; then
           cd fzy
@@ -200,21 +196,6 @@ case "$action" in
     du -h --max-depth=0 $folder | sort --human-numeric-sort
     ;;
 
-  "string_to_num")
-    str=$1
-    shift
-    sum=0
-    pos=0
-
-    # === $ bash_setup  string_to_num   word  -> num
-    while read -n1 char; do
-      code="$(printf '%d\n' "'$char")"
-      sum=$((sum + pos + code))
-      pos=$((pos + 1))
-    done < <(echo -n "$str")
-    echo $sum
-    ;;
-
   "dev!")
     # === $ bash_setup dev!
     # === Exits with code status 1 if "$IS_DEV" is null
@@ -224,43 +205,6 @@ case "$action" in
       exit 1
     fi
     exit 0
-    ;;
-
-
-
-  "Capitalize")
-    # === $ Capitalize wOrD => Word
-    # Based on: http://stackoverflow.com/a/12487465/841803
-    word="$1"
-    first="$(tr '[:lower:]' '[:upper:]' <<< ${word:0:1})"
-    rest="$(tr  '[:upper:]' '[:lower:]' <<< ${word:1})"
-    echo "$first$rest"
-    ;;
-
-  "Model_Name")
-    # === $ Model_Name app_name => App_Name
-    # Based on: http://stackoverflow.com/questions/779847/sed-change-case-of-substitution-group
-    echo "$@" | sed -e 's/_\([a-z]\)/_\U\1/g' -e 's/^\([a-z]\)/\U\1/g'
-    ;;
-
-  "UPPER")
-    # === $ lower wOrD => WORD
-    word="$1"
-    echo "$(tr  '[:lower:]' '[:upper:]' <<< ${word})"
-    ;;
-
-  "lower")
-    # === $ lower wOrD => word
-    word="$1"
-    echo "$(tr  '[:upper:]' '[:lower:]' <<< ${word})"
-    ;;
-
-  "app_name")
-    if [[ -z "$@" ]]; then
-      echo "$(basename $(pwd))"
-    else
-      echo "$1"
-    fi
     ;;
 
   "is_process_group??")
@@ -487,46 +431,6 @@ case "$action" in
     find /etc/ \( -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave \) 2> /dev/null
     ;;
 
-  "colorize")
-    # === colorize RED some text
-    # === colorize GREEN some text
-    # === RED GREEN YELLOW BLUE PURPLE CYAN
-    color_name=$1
-    shift
-    case "$color_name" in
-      "RED" )
-        color=1
-        ;;
-      "GREEN" )
-        color=2
-        ;;
-      "YELLOW" )
-        color=3
-        ;;
-      "BLUE" )
-        color=4
-        ;;
-      "PURPLE" )
-        color=5
-        ;;
-      "CYAN" )
-        color=6
-        ;;
-      * )
-        color=7
-        ;;
-    esac
-
-    # From: stackoverflow.com/questions/635361/ksh-how-to-probe-stdin
-    if [ -t 0 ]
-    then
-      echo -e "$(tput bold)$(tput setaf $color)$@$(tput sgr0)";
-    else
-      while read line; do
-        echo -e "$(tput bold)$(tput setaf $color)${line}$(tput sgr0)";
-      done
-    fi
-    ;;
 
   cp_unless_exists)
     orig=$1; shift
