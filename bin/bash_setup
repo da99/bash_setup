@@ -47,7 +47,7 @@ function make_link {
   if [[ ! -e "$target" ]]
   then # --- create link
     ln -s $orig $target
-    bash_setup GREEN "--- Linked: $orig {{$target}}"
+    sh_color GREEN "--- Linked: $orig {{$target}}"
   else
 
     # --- IF is a sym link?
