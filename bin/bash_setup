@@ -56,7 +56,7 @@ function make_link {
       echo "Already sym link: $target"
 
     else
-      bash_setup RED -e "\n=== Check existing object: {{$target}}"
+      sh_color RED -e "\n=== Check existing object: {{$target}}"
       echo -e "\n diff $orig $target\n\n" 1>&2
       exit 1
 
