@@ -1,7 +1,7 @@
 
-# === {{CMD}}  # Used for testing bash_setup
+# === {{CMD}}  # Used for testing my_bash
 test-and-watch () {
-    $0 test-bash_setup || :
+    $0 test-my_bash || :
 
     echo "=== Watching $THIS_DIR:"
     while read -r CHANGE; do

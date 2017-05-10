@@ -1,7 +1,7 @@
 
 # === {{CMD}}
 test-my_bash () {
-    TEMP="/tmp/test-bash_setup"
+    TEMP="/tmp/test-my_bash"
     rm -rf "$TEMP"; mkdir -p "$TEMP"
 
     # === dirs-are-equal ======================
