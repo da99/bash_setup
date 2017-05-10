@@ -17,7 +17,7 @@ BIN=/apps/bash_setup/bin
 
 
 function git_is_clean {
-    if ! git_setup is-clean
+    if ! my_git is-clean
     then
       echo -e "\n!!! GIT repo not clean enough.\n" 1>&2
       exit 1
