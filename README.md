@@ -24,3 +24,5 @@ SSH
 https://inconsolation.wordpress.com/2015/04/23/rmlint-the-potential-to-purge/
 https://rg3.github.io/youtube-dl/
 http://entrproject.org/
+
+https://news.ycombinator.com/item?id=16198974
