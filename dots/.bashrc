@@ -116,6 +116,7 @@ export ENCRYPT_SALT="CtgY2NkB"
 export SIGN_SALT="9vblSVcU"
 
 export IS_DEV="helya"
+export IS_DEVELOPMENT="helya"
 
 
 
