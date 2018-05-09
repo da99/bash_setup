@@ -2,5 +2,5 @@
 # === {{CMD}}
 #
 install () {
-
+  :
 } # install ()
